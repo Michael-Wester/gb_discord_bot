@@ -16,7 +16,7 @@ Requires discord:
 ```python3 -m pip install -U discord.py```
 
 Run using:
-```python run.py```
+```python3 run.py```
 
 # Original Developer
 Michael Wester
