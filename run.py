@@ -1,7 +1,7 @@
-import discord
+import bot
 
 def run():
-    discord.run()
+    bot.run()
 
 if __name__ == '__main__':
     run()
