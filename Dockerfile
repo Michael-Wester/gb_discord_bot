@@ -24,4 +24,4 @@ RUN pip install python-dotenv
 #RUN pip install -r requirements.txt
 
 # Run the program
-CMD python3 run.py 
+CMD python3 printfiles.py
