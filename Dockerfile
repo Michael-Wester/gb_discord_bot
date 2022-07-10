@@ -2,6 +2,7 @@ FROM ubuntu:18.04
 
 RUN apt-get update && apt-get install -y \
   build-essential \
+  libsdl2-dev \
   python3 \
   python3-pip \
   python3-dev \
@@ -19,7 +20,7 @@ COPY . .
 
 RUN pip install discord
 RUN pip install python-dotenv
-RUN pip install pysdl2
+
 # Install dependencies
 #RUN pip install -r requirements.txt
 
