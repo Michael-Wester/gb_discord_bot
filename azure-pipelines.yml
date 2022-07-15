@@ -1,19 +1,34 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- master
+  branches:
+    include:
+    - refs/heads/master
+  batch: True
+name: $(date:yyyyMMdd)$(rev:.r)
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    vmImage: ubuntu-18.04
+  steps:
+  - checkout: self
+    clean: true
+  - task: Docker@0
+    displayName: Build an image
+    inputs:
+      azureSubscriptionEndpoint: 015275b2-282c-492d-a290-b5dfb49e1992
+      azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/c85746d6-c5c7-49ab-9776-9066bd461f07/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
+  - task: Docker@0
+    displayName: Push an image
+    inputs:
+      azureSubscriptionEndpoint: 015275b2-282c-492d-a290-b5dfb49e1992
+      azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/c85746d6-c5c7-49ab-9776-9066bd461f07/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
+      action: Push an image
+  - task: PublishBuildArtifacts@1    
+    displayName: 'Publish Artifact: drop'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    inputs:
+      targetFolder: '$(Build.ArtifactStagingDirectory)'    
 
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+...
