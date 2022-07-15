@@ -27,6 +27,9 @@ def run():
         if message.content == '!quit':
             await message.channel.send('Quitting...')
             return
+        if message.content == '!meme':
+            await message.channel.send('Memeing...')
+            return
         if message.content == '!a':
             a_button()
             await message.channel.send(file=discord.File(c.screenshot_name))
