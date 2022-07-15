@@ -1,14 +1,16 @@
 import os
 import discord
 from emulator import *
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 import constants as c
 
 
 def run():
     
-    #load_dotenv()
-    TOKEN = "OTU3MTMzNTk3NTc0MzIwMTk5.Yj6WIA.0o76rG4R93TGu7xxVa_pS2C3OWc"
+    load_dotenv()
+    TOKEN = os.getenv('DISCORD_TOKEN')
+    #TOKEN = "OTU3MTMzNTk3NTc0MzIwMTk5.Yj6WIA.0o76rG4R93TGu7xxVa_pS2C3OWc"
+    
     client = discord.Client()
 
     @client.event
