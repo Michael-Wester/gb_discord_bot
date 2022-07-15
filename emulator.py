@@ -6,7 +6,6 @@ import constants as c
 
 def double_size(img):
     new_img = img.resize((img.size[0]*2, img.size[1]*2), Image.ANTIALIAS)
-    # save new image as png
     new_img.save(c.screenshot_name)
     return new_img
 
