@@ -10,7 +10,8 @@ def run():
     load_dotenv()
     #TOKEN = os.getenv('DISCORD_TOKEN')
     #print(os.environ['DISCORD_TOKEN'])
-    TOKEN = "OTU3MTMzNTk3NTc0MzIwMTk5.Yj6WIA.0o76rG4R93TGu7xxVa_pS2C3OWc"
+    TOKEN = os.environ['DISCORD_TOKEN']
+    #TOKEN = "OTU3MTMzNTk3NTc0MzIwMTk5.Yj6WIA.0o76rG4R93TGu7xxVa_pS2C3OWc"
     
     client = discord.Client()
 
