@@ -12,6 +12,8 @@ jobs:
   steps:
   - checkout: self
     clean: true
+    env:
+      DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
   - task: Docker@0
     displayName: Build an image
     inputs:
