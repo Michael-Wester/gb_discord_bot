@@ -8,8 +8,8 @@ import constants as c
 def run():
     
     load_dotenv()
-    TOKEN = os.getenv('DISCORD_TOKEN')
-    #TOKEN = "OTU3MTMzNTk3NTc0MzIwMTk5.Yj6WIA.0o76rG4R93TGu7xxVa_pS2C3OWc"
+    #TOKEN = os.getenv('DISCORD_TOKEN')
+    TOKEN = "OTU3MTMzNTk3NTc0MzIwMTk5.Yj6WIA.0o76rG4R93TGu7xxVa_pS2C3OWc"
     
     client = discord.Client()
 
@@ -29,6 +29,9 @@ def run():
             return
         if message.content == '!meme':
             await message.channel.send('Memeing...')
+            return
+        if message.content == '!meme2':
+            await message.channel.send('Memeing2...')
             return
         if message.content == '!a':
             a_button()
