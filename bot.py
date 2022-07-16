@@ -34,6 +34,9 @@ def run():
         if message.content == '!meme2':
             await message.channel.send('Memeing2...')
             return
+        if message.content == '!meme3':
+            await message.channel.send('Memeing2...')
+            return
         if message.content == '!a':
             a_button()
             await message.channel.send(file=discord.File(c.screenshot_name))
