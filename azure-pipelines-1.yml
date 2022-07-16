@@ -16,12 +16,12 @@ jobs:
     displayName: Build an image
     inputs:
       azureSubscriptionEndpoint: 015275b2-282c-492d-a290-b5dfb49e1992
-      azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "latest" : "/subscriptions/c85746d6-c5c7-49ab-9776-9066bd461f07/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
+      azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/c85746d6-c5c7-49ab-9776-9066bd461f07/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
   - task: Docker@0
     displayName: Push an image
     inputs:
       azureSubscriptionEndpoint: 015275b2-282c-492d-a290-b5dfb49e1992
-      azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "latest" : "/subscriptions/c85746d6-c5c7-49ab-9776-9066bd461f07/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
+      azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/c85746d6-c5c7-49ab-9776-9066bd461f07/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
       action: Push an image
   - task: CopyFiles@2
     inputs:
