@@ -35,7 +35,7 @@ def run():
             await message.channel.send('Memeing2...')
             return
         if message.content == '!meme3':
-            await message.channel.send('Memeing2...')
+            await message.channel.send('Memeing3...')
             return
         if message.content == '!a':
             a_button()
