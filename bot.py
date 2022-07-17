@@ -10,8 +10,8 @@ def run():
     load_dotenv()
     #TOKEN = os.getenv('DISCORD_TOKEN')
     #print(os.environ['DISCORD_TOKEN'])
-    TOKEN = os.environ['DISCORD_TOKEN']
-    #TOKEN = "OTU3MTMzNTk3NTc0MzIwMTk5.Yj6WIA.0o76rG4R93TGu7xxVa_pS2C3OWc"
+    #TOKEN = os.environ['DISCORD_TOKEN']
+    TOKEN = "OTU3MTMzNTk3NTc0MzIwMTk5.Yj6WIA.0o76rG4R93TGu7xxVa_pS2C3OWc"
     
     client = discord.Client()
 
@@ -29,8 +29,9 @@ def run():
         if message.content == '!quit':
             await message.channel.send('Quitting...')
             return
-        if message.content == '!meme':
-            await message.channel.send('Memeing...')
+        if message.content == '!keycheck':
+            await message.channel.send('Token = ' + os.environ['DISCORD_TOKEN'])
+            await message.channel.send('Token get = ' + os.environ.get('DISCORD_TOKEN'))
             return
         if message.content == '!meme2':
             await message.channel.send('Memeing2...')
