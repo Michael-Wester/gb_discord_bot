@@ -3,7 +3,15 @@ import discord
 from emulator import *
 from dotenv import load_dotenv
 import constants as c
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
 
+
+credential = DefaultAzureCredential()
+
+secret_client = SecretClient(vault_url="https://discordkey.vault.azure.net/", credential=credential)
+
+secret = secret_client.get_secret("discordkey")
 
 def run():
     
@@ -32,6 +40,7 @@ def run():
         if message.content == '!keycheck':
             await message.channel.send('Token = ' + os.environ['DISCORD_TOKEN'])
             await message.channel.send('Token get = ' + os.environ.get('DISCORD_TOKEN'))
+            await message.channel.send(secret.value)
             return
         if message.content == '!meme2':
             await message.channel.send('Memeing2...')

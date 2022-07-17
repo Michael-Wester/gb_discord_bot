@@ -16,13 +16,10 @@ WORKDIR /app
 COPY . .
 
 #Copy files from the host machine to the container
-#COPY requirements.txt .
-
+RUN pip install azure-identity
+RUN pip install azure-keyvault-secrets
 RUN pip install discord
 RUN pip install python-dotenv
-
-# Install dependencies
-#RUN pip install -r requirements.txt
 
 # Run the program
 CMD python3 run.py
