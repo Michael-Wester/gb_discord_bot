@@ -13,7 +13,7 @@ jobs:
   - checkout: self
     clean: true
   - task: Docker@0
-    displayName: Build an image]
+    displayName: Build an image
     env:
       DISCORD_TOKEN: $(DISCORD_TOKEN)
     inputs:
