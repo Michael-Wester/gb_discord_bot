@@ -6,7 +6,7 @@ def upload_save_state():
     load_dotenv()
     try:
         print("Azure Blob Storage v" + __version__ + " - Python quickstart sample")
-        connect_str = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+        connect_str = os.environ['AZURE_STORAGE_CONNECTION_STRING']
 
         # Create the BlobServiceClient object which will be used to create a container client
         blob_service_client = BlobServiceClient.from_connection_string(connect_str)
@@ -40,21 +40,23 @@ def upload_save_state():
 
         # Quick start code goes here
         print("\nListing blobs...")
-
+        count = 0
         # List the blobs in the container
         blob_list = container_client.list_blobs()
         for blob in blob_list:
             print("\t" + blob.name)
+            count += 1
 
     except Exception as ex:
         print('Exception:')
         print(ex)
+    return count
 
 def download_save_state():
     load_dotenv()
     try:
         print("Azure Blob Storage v" + __version__ + " - Python quickstart sample")
-        connect_str = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+        connect_str = os.environ['AZURE_STORAGE_CONNECTION_STRING']
 
         # Create the BlobServiceClient object which will be used to create a container client
         blob_service_client = BlobServiceClient.from_connection_string(connect_str)
@@ -86,9 +88,11 @@ def download_save_state():
             print(ex)
 
         # List the blobs in the container
+        count = 0
         blob_list = container_client.list_blobs()
         for blob in blob_list:
             print("\t" + blob.name)
+            count += 1
             
         with open(download_file_path, "wb") as download_file:
          download_file.write(blob_client.download_blob(blob.name).readall())
@@ -96,3 +100,4 @@ def download_save_state():
     except Exception as ex:
         print('Exception:')
         print(ex)
+    return count

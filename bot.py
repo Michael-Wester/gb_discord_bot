@@ -1,3 +1,4 @@
+from itertools import count
 import os
 import discord
 from azblobstorage import download_save_state
@@ -61,12 +62,12 @@ def run():
             await message.channel.send(file=discord.File(c.screenshot_name))
             return
         if message.content == '!download':
-            download_save_state()
-            await message.channel.send('downloading...')
+            count1 = download_save_state()
+            await message.channel.send('downloading ' + str(count1) + ' blobs')
             return
         if message.content == '!upload':
-            upload_save_state()
-            await message.channel.send('downloading...')
+            count2 = upload_save_state()
+            await message.channel.send('uploading ' + str(count2) + ' blobs')
             return
         if message.content.startswith('!'):
             await message.channel.send('Command not found. Type !help for a list of commands.')
