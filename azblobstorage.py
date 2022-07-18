@@ -96,5 +96,3 @@ def download_save_state():
     except Exception as ex:
         print('Exception:')
         print(ex)
-
-download_save_state()
