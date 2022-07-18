@@ -16,8 +16,7 @@ WORKDIR /app
 COPY . .
 
 #Copy files from the host machine to the container
-RUN pip install azure-identity
-RUN pip install azure-keyvault-secrets
+RUN pip install azure-storage-blob
 RUN pip install discord
 RUN pip install python-dotenv
 

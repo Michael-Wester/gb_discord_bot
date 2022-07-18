@@ -1,8 +1,10 @@
+from distutils.command.upload import upload
 from pyboy import PyBoy
 from pyboy import WindowEvent
 from PIL import Image
+from azblobstorage import download_save_state, upload_save_state
 import constants as c
-
+from emulator import *
 
 def double_size(img):
     new_img = img.resize((img.size[0]*2, img.size[1]*2), Image.ANTIALIAS)
@@ -25,6 +27,7 @@ def movement(a, b):
     double_size(pyboy.screen_image())
     pyboy.tick()
     pyboy.save_state(open('red.state', 'wb'))
+    upload_save_state()
     pyboy.stop()
 
 def a_button():
@@ -50,12 +53,3 @@ def start():
 
 def select():
     movement(WindowEvent.PRESS_BUTTON_SELECT, WindowEvent.RELEASE_BUTTON_SELECT)
-
-
-    
-
-
-
-
-        
-

@@ -1,8 +1,10 @@
 import os
 import discord
+from azblobstorage import download_save_state
 from emulator import *
 from dotenv import load_dotenv
 import constants as c
+from emulator import *
 
 
 def run():
@@ -11,6 +13,8 @@ def run():
     TOKEN = os.environ['DISCORD_TOKEN']
     
     client = discord.Client()
+
+    download_save_state()
 
     @client.event
     async def on_ready():
