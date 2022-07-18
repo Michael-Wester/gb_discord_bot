@@ -14,8 +14,6 @@ def run():
     
     client = discord.Client()
 
-    download_save_state()
-
     @client.event
     async def on_ready():
         print(f'{client.user} has connected to Discord!')
@@ -61,6 +59,14 @@ def run():
         if message.content == '!select':
             select()
             await message.channel.send(file=discord.File(c.screenshot_name))
+            return
+        if message.content == '!download':
+            download_save_state()
+            await message.channel.send('downloading...')
+            return
+        if message.content == '!upload':
+            upload_save_state()
+            await message.channel.send('downloading...')
             return
         if message.content.startswith('!'):
             await message.channel.send('Command not found. Type !help for a list of commands.')
