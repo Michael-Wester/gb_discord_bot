@@ -17,6 +17,7 @@ def run():
 
     @client.event
     async def on_ready():
+        download_save_state()
         print(f'{client.user} has connected to Discord!')
 
     @client.event
@@ -70,8 +71,8 @@ def run():
             await message.channel.send('uploading ' + str(count2) + ' blobs')
             return
         if message.content == '!keycheck':
-            STORAGE_TOKEN = os.environ['AZURE_STORAGE_CONNECTION_STRING']
-            await message.channel.send('Token = ' + STORAGE_TOKEN)
+            AZURE_STORAGE_CONNECTION_STRING = os.environ['AZURE_STORAGE_CONNECTION_STRING'] # In Azure there needs to be quotes around the connection string in variables
+            await message.channel.send('Token = ' + AZURE_STORAGE_CONNECTION_STRING)
             return
         if message.content.startswith('!'):
             await message.channel.send('Command not found. Type !help for a list of commands.')
