@@ -71,7 +71,7 @@ def run():
             return
         if message.content == '!keycheck':
             STORAGE_TOKEN = os.environ['AZURE_STORAGE_CONNECTION_STRING']
-            await message.channel.send('uploading ' + str(count2) + ' blobs')
+            await message.channel.send('Token = ' + STORAGE_TOKEN)
             return
         if message.content.startswith('!'):
             await message.channel.send('Command not found. Type !help for a list of commands.')
