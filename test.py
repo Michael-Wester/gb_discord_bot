@@ -1,11 +1,5 @@
-import os
-import discord
-from emulator import *
-from dotenv import load_dotenv
-import constants as c
 
-print(load_dotenv())
-#TOKEN = os.getenv('DISCORD_TOKEN')
-print(os.environ['DISCORD_TOKEN'])
-print(os.environ['PISCORD_TOKEN'])
-print(os.environ['CISCORD_TOKEN'])
+
+server_name = "tesESt 24234$@#$...///'''"
+server_name = ''.join(ch for ch in server_name if ch.isalnum())
+print(server_name)

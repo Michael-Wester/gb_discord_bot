@@ -27,7 +27,6 @@ def movement(a, b):
     double_size(pyboy.screen_image())
     pyboy.tick()
     pyboy.save_state(open('red.state', 'wb'))
-    upload_save_state()
     pyboy.stop()
 
 def a_button():

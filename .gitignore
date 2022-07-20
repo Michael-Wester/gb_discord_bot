@@ -3,3 +3,9 @@
 __pycache__
 rubbish
 .prettierignore
+red.state
+*.png
+red.state
+screenshot.png
+red.gb.ram
+*.properties
