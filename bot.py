@@ -1,6 +1,8 @@
 from itertools import count
 import os
+from unicodedata import name
 import discord
+from jinja2 import pass_context
 from azblobstorage import download_save_state
 from emulator import *
 from dotenv import load_dotenv
@@ -73,6 +75,9 @@ def run():
         if message.content == '!keycheck':
             AZURE_STORAGE_CONNECTION_STRING = os.environ['AZURE_STORAGE_CONNECTION_STRING'] # In Azure there needs to be quotes around the connection string in variables
             await message.channel.send('Token = ' + AZURE_STORAGE_CONNECTION_STRING)
+            return
+        if message.content == '!id':
+            await message.channel.send("ID:" + str(message.guild.id) + "\n Name: " + str(message.guild.name))
             return
         if message.content.startswith('!'):
             await message.channel.send('Command not found. Type !help for a list of commands.')
