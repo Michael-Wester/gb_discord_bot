@@ -1,13 +1,11 @@
-from itertools import count
 import os
-from unicodedata import name
 import discord
-from jinja2 import pass_context
-from azblobstorage import download_save_state
+from azblobstorage import download_save_state, upload_save_state
 from emulator import *
 from dotenv import load_dotenv
 import constants as c
 from emulator import *
+import time
 
 
 def run():
@@ -23,10 +21,15 @@ def run():
 
     @client.event
     async def on_message(message):
-        server_id = message.guild.id
-        server_name = message.guild.name
         if message.author == client.user:
             return
+
+        start_time = time.time()
+        server_id = message.guild.id
+        server_name = message.guild.name
+        #Create directory for server
+        filepath = str(server_id) + "/"
+
         if message.content == '!help':
             await message.channel.send('Commands are: !up, !down, !left, !right, !start, !select, !a, !b, !quit, !help')
             return
@@ -35,49 +38,51 @@ def run():
             return
         if message.content == '!a':
             download_save_state(server_id, server_name)
-            a_button()
+            a_button(filepath)
             upload_save_state(server_id, server_name)
             await message.channel.send(file=discord.File(c.screenshot_name))
             return
         if message.content == '!b':
             download_save_state(server_id, server_name)
-            b_button()
+            b_button(filepath)
             upload_save_state(server_id, server_name)
             await message.channel.send(file=discord.File(c.screenshot_name))
             return
         if message.content == '!up':
             download_save_state(server_id, server_name)
-            up()
+            up(filepath)
             upload_save_state(server_id, server_name)
             await message.channel.send(file=discord.File(c.screenshot_name))
             return
         if message.content == '!down':
             download_save_state(server_id, server_name)
-            down()
+            down(filepath)
             upload_save_state(server_id, server_name)
             await message.channel.send(file=discord.File(c.screenshot_name))
+            print("Sequential run time: %.2f seconds" % (time.time() - start_time))
             return
         if message.content == '!left':
             download_save_state(server_id, server_name)
-            left()
+            left(filepath)
             upload_save_state(server_id, server_name)
             await message.channel.send(file=discord.File(c.screenshot_name))
+            print("Sequential run time: %.2f seconds" % (time.time() - start_time))
             return
         if message.content == '!right':
             download_save_state(server_id, server_name)
-            right()
+            right(filepath)
             upload_save_state(server_id, server_name)
             await message.channel.send(file=discord.File(c.screenshot_name))
             return
         if message.content == '!start':
             download_save_state(server_id, server_name)
-            start()
+            start(filepath)
             upload_save_state(server_id, server_name)
             await message.channel.send(file=discord.File(c.screenshot_name))
             return
         if message.content == '!select':
             download_save_state(server_id, server_name)
-            select()
+            select(filepath)
             upload_save_state(server_id, server_name)
             await message.channel.send(file=discord.File(c.screenshot_name))
             return
@@ -99,6 +104,8 @@ def run():
         if message.content.startswith('!'):
             await message.channel.send('Command not found. Type !help for a list of commands.')
             return
+
+
 
     client.run(TOKEN)
 
