@@ -8,7 +8,6 @@ from emulator import *
 
 def double_size(img):
     new_img = img.resize((img.size[0]*2, img.size[1]*2), Image.ANTIALIAS)
-    new_img.save(c.screenshot_name)
     return new_img
 
 def movement(a, b, filepath):
@@ -24,7 +23,8 @@ def movement(a, b, filepath):
     for i in range(600):
         pyboy.tick()
     #pyboy.screen_image().save('ss.png')
-    double_size(pyboy.screen_image())
+    new_img = double_size(pyboy.screen_image())
+    new_img.save(filepath + c.screenshot_name)
     pyboy.tick()
     pyboy.save_state(open(filepath + 'red.state', 'wb'))
     pyboy.stop()

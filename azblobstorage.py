@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from regex import F
 
 def create_blob_service_client():
+    load_dotenv()
     print("Azure Blob Storage v" + __version__ + " - Python quickstart sample")
     connect_str = os.environ['AZURE_STORAGE_CONNECTION_STRING']
     
@@ -17,7 +18,7 @@ def initialise_property_file(server_id, server_name, file_path):
     server_properties_file.write("server_name=" + str(server_name) + "\n")
     server_properties_file.close()
 
-def create_container_client(server_id):
+def create_container_storage_client(server_id):
     blob_service_client = create_blob_service_client()
     container_name = str(server_id)
     try:
@@ -26,7 +27,7 @@ def create_container_client(server_id):
     except:
         print("Container " + container_name + " already exists")
 
-def get_container_client(server_id):
+def get_container_storage_client(server_id):
     blob_service_client = create_blob_service_client()
     container_name = str(server_id)
     try:
@@ -51,7 +52,7 @@ def get_total_number_blobs(server_id):
         count += 1
     return count
 
-def delete_temp_files(server_id, server_name, file_path):
+def delete_temp_files(server_id):
     try:      
         shutil.rmtree(str(server_id))
         print("deleted temp files")
@@ -112,12 +113,42 @@ def download_save_state(server_id, server_name):
 
         container_name = str(server_id)
 
-        container_client = get_container_client(server_id)
+        container_client = get_container_storage_client(server_id)
         # List the blobs in the container
         count = 0
         blob_list = container_client.list_blobs()
 
-        blob_client = blob_service_client.get_container_client(container= container_name) 
+        blob_client = blob_service_client.get_container_client(container= container_name)
+
+        for blob in blob_list:
+            print("\t" + blob.name)
+            with open(file_path + blob.name, "wb") as download_file:
+                download_file.write(blob_client.download_blob(blob.name).readall())
+            count += 1
+        print("\nDownloaded " + str(count) + " blobs")
+
+    except Exception as ex:
+        print('Exception:')
+        print(ex)
+
+def download_new_game_files(server_id, rom_name):
+    load_dotenv()
+    try:
+        try:
+            os.mkdir(str(server_id))
+        except:
+            print("directory already exists")
+        file_path = str(server_id) + "/" 
+        blob_service_client = create_blob_service_client()
+
+        container_name = str(server_id)
+
+        container_client = get_container_storage_client("roms" + "/" + rom_name)
+        # List the blobs in the container
+        count = 0
+        blob_list = container_client.list_blobs()
+
+        blob_client = blob_service_client.get_container_client(container=container_name)
 
         for blob in blob_list:
             print("\t" + blob.name)
