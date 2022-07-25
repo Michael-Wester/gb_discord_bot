@@ -1,20 +1,9 @@
 import os
 from dotenv import load_dotenv
 
-def appendServer(server_id):
-    serverlist = open("serverlist.txt", "r")
-    # For each server in the serverlist
-    for server in serverlist:
-        serverlist_list = serverlist.read().splitlines()
-        
-    if str(server_id) not in serverlist_list:
-        serverlist.close()
-        # x = list(chunks(range(0, serverlist_list.length), 2))
-        serverlist = open("serverlist.txt", "a")
-        serverlist.write(str(server_id) + "\n")
-        serverlist.close()
-        return False
-    return True
+from server_properties import remove_server
+
+
 
 def deploy_emulator(server_id):
     load_dotenv()
@@ -44,6 +33,7 @@ def delete_container(server_id):
     container_name = str(server_id)
     delete_container_cmd = "az container delete -g Discordbot --name " + container_name + " --yes"
     os.system(delete_container_cmd)
+    remove_server(server_id)
 
 #delete_container(957136739632295966)
 #deploy_emulator(957136739632295966)

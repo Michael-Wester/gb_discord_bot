@@ -1,11 +1,11 @@
 import os
 import discord
-from azblobstorage import create_container_storage_client, download_new_game_files, download_save_state, get_container_storage_client, upload_save_state
+from az_blob_storage import create_container_storage_client, download_new_game_files, download_save_state, get_container_storage_client, upload_properties_file, upload_save_state
+from server_properties import *
 from emulator import *
 from dotenv import load_dotenv
 import constants as c
 from emulator import *
-import time
 from az_containers import *
 import asyncio
 
@@ -27,99 +27,80 @@ def run():
         if message.author == client.user:
             return
 
-        start_time = time.time()
         server_id = message.guild.id
         server_name = message.guild.name
         #Create directory for server
-        filepath = str(server_id) + "/"
-        serverInFile = appendServer(server_id)
-
-        
+        serverInFile = append_server(server_id)
 
         if CONTAINER_ID == "0":
             def check(msg):
                 return msg.author == message.author and msg.channel == message.channel and \
-                msg.content.lower() in ["red", "blue", "yellow"]
+                msg.content.lower() in ["!red", "!green", "!blue", "!yellow", "red", "green", "blue", "yellow"]
             if message.content == '!newgame':
-                create_container_storage_client(server_id)
-                await message.channel.send("Container created")
-
                 try:
-                    msg = await client.wait_for("message", check=check, timeout=30) # 30 seconds to reply
+                    await message.channel.send("Which pokemon game would you like to play? (!red, !green, !blue or !yellow)")
+                    msg = await client.wait_for("message", check=check, timeout=300) # 30 seconds to reply
                 except asyncio.TimeoutError:
                     await message.send("Sorry, you didn't reply in time!")
-                download_new_game_files(server_id, "red")
-                deploy_emulator(server_id)
+                    return
+                game_type = msg.content.lower().strip("!")
+                create_container_storage_client(server_id)
+                initialise_property_file(server_id, server_name, game_type)
+                upload_properties_file(server_id)
+                download_new_game_files(server_id) # I think I need to upload this instead
+                deploy_emulator(server_id)            
             return
 
-
-        if serverInFile == True and CONTAINER_ID == message.guild.id:
+        if CONTAINER_ID == message.guild.id:
+            filepath = str(server_id) + "/"            
             if message.content == '!a':
-                download_save_state(server_id, server_name)
-                a_button(filepath)
+                a_button(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-
                 upload_save_state(server_id, server_name)
                 return
             if message.content == '!b':
-                download_save_state(server_id, server_name)
-                b_button(filepath)
+                b_button(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-
                 upload_save_state(server_id, server_name)
                 return
             if message.content == '!up':
-                download_save_state(server_id, server_name)
-                up(filepath)
+                up(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-
                 upload_save_state(server_id, server_name)
                 return
             if message.content == '!down':
-                download_save_state(server_id, server_name)
-                down(filepath)
+                down(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-
                 upload_save_state(server_id, server_name)
-                print("Sequential run time: %.2f seconds" % (time.time() - start_time))
                 return
             if message.content == '!left':
-                download_save_state(server_id, server_name)
-                left(filepath)
+                left(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
                 upload_save_state(server_id, server_name)
-
-                print("Sequential run time: %.2f seconds" % (time.time() - start_time))
                 return
             if message.content == '!right':
-                download_save_state(server_id, server_name)
-                right(filepath)
+                right(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-
                 upload_save_state(server_id, server_name)
                 return
             if message.content == '!start':
-                download_save_state(server_id, server_name)
-                start(filepath)
+                start(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-
                 upload_save_state(server_id, server_name)
                 return
             if message.content == '!select':
-                download_save_state(server_id, server_name)
-                select(filepath)
+                select(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-
                 upload_save_state(server_id, server_name)
                 return
-            # if message.content == '!download':
-            #     count1 = download_save_state()
-            #     await message.channel.send('downloading ' + str(count1) + ' blobs')
-            #     return
-            # if message.content == '!upload':
-            #     count2 = upload_save_state()
-            #     await message.channel.send('uploading ' + str(count2) + ' blobs')
-            #     return
+            if message.content == '!download':
+                await message.channel.send('downloading blobs')
+                download_save_state(server_id, server_name)
+                return
+            if message.content == '!upload':
+                await message.channel.send('uploading blobs')
+                upload_save_state(server_id, server_name)
+                return
             if message.content == '!keycheck':
                 AZURE_STORAGE_CONNECTION_STRING = os.environ['AZURE_STORAGE_CONNECTION_STRING'] # In Azure there needs to be quotes around the connection string in variables
                 await message.channel.send('Token = ' + AZURE_STORAGE_CONNECTION_STRING)
@@ -128,7 +109,6 @@ def run():
                 await message.channel.send("ID: " + str(message.guild.id) + "\n Name: " + str(message.guild.name))
                 return
     
-
     client.run(TOKEN)
 
 

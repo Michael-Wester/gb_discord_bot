@@ -5,18 +5,14 @@ from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, _
 from dotenv import load_dotenv
 from regex import F
 
+from server_properties import get_game_type, initialise_property_file, initialise_property_file_folder
+
 def create_blob_service_client():
     load_dotenv()
     print("Azure Blob Storage v" + __version__ + " - Python quickstart sample")
     connect_str = os.environ['AZURE_STORAGE_CONNECTION_STRING']
     
     return BlobServiceClient.from_connection_string(connect_str)
-
-def initialise_property_file(server_id, server_name, file_path):
-    server_properties_file = open(file_path + ''.join(ch for ch in server_name if ch.isalnum()) + ".properties", "w")
-    server_properties_file.write("server_id=" + str(server_id) + "\n")
-    server_properties_file.write("server_name=" + str(server_name) + "\n")
-    server_properties_file.close()
 
 def create_container_storage_client(server_id):
     blob_service_client = create_blob_service_client()
@@ -59,29 +55,21 @@ def delete_temp_files(server_id):
     except:
         print("temp files not found")
 
-def upload_blob(container_name, blob_name, file_path):
+def upload_blob(server_id, blob_name, file_path):
+    container_name = str(server_id)
     blob_service_client = create_blob_service_client()
     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
         
     with open(file_path + blob_name, "rb") as server_properties_file:
         blob_client.upload_blob(server_properties_file, overwrite=True)
 
-def upload_save_state(server_id, server_name):
-    load_dotenv()
+def upload_save_state(server_id):
     try:
-        # Create a unique name for the container from server name and first 4 characters of server id
-        try:
-            os.mkdir(str(server_id))
-        except:
-            print("directory already exists")
-        file_path = str(server_id) + "/"
-        initialise_property_file(server_id, server_name, file_path)
         container_name = str(server_id)
-
-        simpleServerName = ''.join(ch for ch in server_name if ch.isalnum())
+        file_path = container_name + "/"
 
         #upload the server properties file
-        upload_blob(container_name, simpleServerName + ".properties", file_path)
+        upload_blob(container_name, container_name + ".properties", file_path)
 
         #upload the save state file
         upload_blob(container_name, "red.state", file_path)
@@ -93,25 +81,31 @@ def upload_save_state(server_id, server_name):
         upload_blob(container_name, "red.gb", file_path)
 
         print("uploaded 4 files")
-        delete_temp_files(server_id, simpleServerName, file_path)
+        #delete_temp_files(server_id, simpleServerName, file_path)
 
     except Exception as ex:
         print('Exception:')
         print(ex)
 
-def download_save_state(server_id, server_name):
+def upload_properties_file(server_id):
+    container_name = str(server_id)
+    file_path = container_name + "/"
+    upload_blob(container_name, container_name + ".properties", file_path)
+
+    
+
+def download_save_state(server_id):
     load_dotenv()
     try:
         try:
             os.mkdir(str(server_id))
         except:
             print("directory already exists")
-        file_path = str(server_id) + "/" 
+        
         blob_service_client = create_blob_service_client()
 
-        initialise_property_file(server_id, server_name, file_path) 
-
         container_name = str(server_id)
+        file_path = container_name + "/"
 
         container_client = get_container_storage_client(server_id)
         # List the blobs in the container
@@ -131,19 +125,22 @@ def download_save_state(server_id, server_name):
         print('Exception:')
         print(ex)
 
-def download_new_game_files(server_id, rom_name):
+def download_new_game_files(server_id):
     load_dotenv()
     try:
         try:
             os.mkdir(str(server_id))
         except:
             print("directory already exists")
-        file_path = str(server_id) + "/" 
+        
         blob_service_client = create_blob_service_client()
 
         container_name = str(server_id)
+        file_path = container_name + "/"
 
-        container_client = get_container_storage_client("roms" + "/" + rom_name)
+        game_type = get_game_type(server_id)
+
+        container_client = get_container_storage_client("roms" + "/" + game_type)
         # List the blobs in the container
         count = 0
         blob_list = container_client.list_blobs()
@@ -155,6 +152,37 @@ def download_new_game_files(server_id, rom_name):
             with open(file_path + blob.name, "wb") as download_file:
                 download_file.write(blob_client.download_blob(blob.name).readall())
             count += 1
+        print("\nDownloaded " + str(count) + " blobs")
+
+    except Exception as ex:
+        print('Exception:')
+        print(ex)
+
+def download_server_properties(server_id):
+    load_dotenv()
+    try:
+        try:
+            os.mkdir(str(server_id))
+        except:
+            print("directory already exists")
+        
+        blob_service_client = create_blob_service_client()
+
+        container_name = str(server_id)
+        file_path = container_name + "/"
+
+        container_client = get_container_storage_client(server_id)
+        # List the blobs in the container
+        count = 0
+        blob_list = container_client.list_blobs()
+
+        blob_client = blob_service_client.get_container_client(container= container_name)
+
+        for blob in blob_list:
+            if blob.name == container_name + ".properties":
+                with open(file_path + blob.name, "wb") as download_file:
+                    download_file.write(blob_client.download_blob(blob.name).readall())
+                count += 1
         print("\nDownloaded " + str(count) + " blobs")
 
     except Exception as ex:
