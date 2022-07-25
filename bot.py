@@ -7,6 +7,7 @@ import constants as c
 from emulator import *
 import time
 from az_containers import *
+import asyncio
 
 
 def run():
@@ -33,10 +34,20 @@ def run():
         filepath = str(server_id) + "/"
         serverInFile = appendServer(server_id)
 
+        
+
         if CONTAINER_ID == "0":
+            def check(msg):
+                return msg.author == message.author and msg.channel == message.channel and \
+                msg.content.lower() in ["red", "blue", "yellow"]
             if message.content == '!newgame':
                 create_container_storage_client(server_id)
                 await message.channel.send("Container created")
+
+                try:
+                    msg = await client.wait_for("message", check=check, timeout=30) # 30 seconds to reply
+                except asyncio.TimeoutError:
+                    await message.send("Sorry, you didn't reply in time!")
                 download_new_game_files(server_id, "red")
                 deploy_emulator(server_id)
             return
