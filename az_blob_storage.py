@@ -1,8 +1,9 @@
 import os
 import shutil
+from time import sleep
 from azure.storage.blob import BlobServiceClient, __version__
 from dotenv import load_dotenv
-from server_properties import get_game_type
+from server_properties import get_game_type, initialise_property_file_folder
 
 
 def create_blob_service_client():
@@ -46,23 +47,19 @@ def get_total_number_blobs(server_id):
         count += 1
     return count
 
-def delete_temp_files(server_id):
-    try:      
-        shutil.rmtree(str(server_id))
-        print("deleted temp files")
-    except:
-        print("temp files not found")
-
 def upload_blob(server_id, blob_name, file_path):
     container_name = str(server_id)
     blob_service_client = create_blob_service_client()
     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
         
-    with open(file_path + blob_name, "rb") as server_properties_file:
-        blob_client.upload_blob(server_properties_file, overwrite=True)
+    with open(file_path + blob_name, "rb") as upload_file:
+        blob_client.upload_blob(upload_file, overwrite=True)
+
 
 def upload_save_state(server_id):
     try:
+        initialise_property_file_folder(server_id)
+
         container_name = str(server_id)
         file_path = container_name + "/"
 
@@ -93,14 +90,10 @@ def upload_properties_file(server_id):
     upload_blob(container_name, container_name + ".properties", file_path)
 
     
-
 def download_save_state(server_id):
     load_dotenv()
     try:
-        try:
-            os.mkdir(str(server_id))
-        except:
-            print("directory already exists")
+        initialise_property_file_folder(server_id)
         
         blob_service_client = create_blob_service_client()
 
@@ -125,36 +118,23 @@ def download_save_state(server_id):
         print('Exception:')
         print(ex)
 
+def download_blob(server_id, container_name, blob_name):
+    file_path = str(server_id) + "/"
+    blob_service_client = create_blob_service_client()
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    with open(file_path + blob_name, "wb") as download_file:
+        download_file.write(blob_client.download_blob().readall())
+
 def download_new_game_files(server_id):
     load_dotenv()
     try:
-        try:
-            os.mkdir(str(server_id))
-        except:
-            print("directory already exists")
-        
-        blob_service_client = create_blob_service_client()
-
-        container_name = str(server_id)
-        file_path = container_name + "/"
+        initialise_property_file_folder(server_id)
 
         game_type = get_game_type(server_id)
 
-        container_client = get_container_storage_client("roms")
-        # List the blobs in the container
-        count = 0
-        blob_list = container_client.list_blobs()
-
-        blob_client = blob_service_client.get_container_client(container=container_name)
-
-        for blob in blob_list:
-            print("\t" + blob.name)
-            if game_type in blob.name:
-                with open(file_path + blob.name, "wb") as download_file:
-                    download_file.write(blob_client.download_blob(blob.name).readall())
-                count += 1
-        print("\nDownloaded " + str(count) + " blobs")
-
+        download_blob(server_id, "roms", game_type + ".gb")
+        download_blob(server_id, "roms", game_type + ".gb.ram")
+        download_blob(server_id, "roms", game_type + ".state")
     except Exception as ex:
         print('Exception:')
         print(ex)
@@ -162,10 +142,7 @@ def download_new_game_files(server_id):
 def download_server_properties(server_id):
     load_dotenv()
     try:
-        try:
-            os.mkdir(str(server_id))
-        except:
-            print("directory already exists")
+        initialise_property_file_folder(server_id)
         
         blob_service_client = create_blob_service_client()
 
@@ -189,3 +166,11 @@ def download_server_properties(server_id):
     except Exception as ex:
         print('Exception:')
         print(ex)
+
+def download_serverlist(server_id):
+    initialise_property_file_folder(server_id)
+    download_blob(server_id, "global", "serverlist.txt")
+
+
+def upload_serverlist():
+    upload_blob("global", "serverlist.txt", "serverlist.txt")

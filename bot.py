@@ -1,6 +1,6 @@
 import os
 import discord
-from az_blob_storage import create_container_storage_client, download_new_game_files, download_save_state, upload_properties_file, upload_save_state
+from az_blob_storage import create_container_storage_client, download_new_game_files, download_save_state, download_server_properties, download_serverlist, upload_properties_file, upload_save_state, upload_serverlist
 from server_properties import *
 from emulator import *
 from dotenv import load_dotenv
@@ -20,6 +20,15 @@ def run():
 
     @client.event
     async def on_ready():
+        # If Container ID is not in the serverlist then download the game files and add the server to the serverlist
+        download_serverlist(CONTAINER_ID)
+        if CONTAINER_ID not in get_server_list(CONTAINER_ID):
+            download_server_properties(CONTAINER_ID)
+            download_new_game_files(CONTAINER_ID)
+            append_server(CONTAINER_ID)
+            upload_serverlist(CONTAINER_ID)
+
+        
         print(f'{client.user} has connected to Discord!')
 
     @client.event
@@ -30,7 +39,6 @@ def run():
         server_id = message.guild.id
         server_name = message.guild.name
         #Create directory for server
-        serverInFile = append_server(server_id)
 
         if CONTAINER_ID == "0":
             def check(msg):
@@ -47,8 +55,9 @@ def run():
                 create_container_storage_client(server_id)
                 initialise_property_file(server_id, server_name, game_type)
                 upload_properties_file(server_id)
-                download_new_game_files(server_id) # I think I need to upload this instead
-                deploy_emulator(server_id)            
+                deploy_emulator(server_id)
+                #delete_temp_files(server_id)
+                await message.channel.send("Part 1 of the game has been deployed. Please wait for the game to start.")           
             return
 
         if CONTAINER_ID == message.guild.id:
