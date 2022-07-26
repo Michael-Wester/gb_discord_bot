@@ -1,4 +1,3 @@
-from distutils.command.upload import upload
 from pyboy import PyBoy
 from pyboy import WindowEvent
 from PIL import Image

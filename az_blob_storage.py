@@ -1,11 +1,9 @@
-import os, uuid
-from time import sleep
+import os
 import shutil
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, __version__
+from azure.storage.blob import BlobServiceClient, __version__
 from dotenv import load_dotenv
-from regex import F
+from server_properties import get_game_type
 
-from server_properties import get_game_type, initialise_property_file, initialise_property_file_folder
 
 def create_blob_service_client():
     load_dotenv()

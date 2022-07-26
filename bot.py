@@ -1,6 +1,6 @@
 import os
 import discord
-from az_blob_storage import create_container_storage_client, download_new_game_files, download_save_state, get_container_storage_client, upload_properties_file, upload_save_state
+from az_blob_storage import create_container_storage_client, download_new_game_files, download_save_state, upload_properties_file, upload_save_state
 from server_properties import *
 from emulator import *
 from dotenv import load_dotenv

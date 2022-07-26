@@ -1,8 +1,6 @@
 import os
 from dotenv import load_dotenv
-
 from server_properties import remove_server
-
 
 
 def deploy_emulator(server_id):
