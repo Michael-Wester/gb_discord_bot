@@ -68,17 +68,19 @@ def upload_save_state(server_id):
         container_name = str(server_id)
         file_path = container_name + "/"
 
+        game_type = get_game_type(server_id)
+
         #upload the server properties file
         upload_blob(container_name, container_name + ".properties", file_path)
 
         #upload the save state file
-        upload_blob(container_name, "red.state", file_path)
+        upload_blob(container_name, game_type + ".state", file_path)
 
         #upload the gb ram file
-        upload_blob(container_name, "red.gb.ram", file_path)
+        upload_blob(container_name, game_type + ".gb.ram", file_path)
 
         #upload the gb file
-        upload_blob(container_name, "red.gb", file_path)
+        upload_blob(container_name, game_type + ".gb", file_path)
 
         print("uploaded 4 files")
         #delete_temp_files(server_id, simpleServerName, file_path)
@@ -140,7 +142,7 @@ def download_new_game_files(server_id):
 
         game_type = get_game_type(server_id)
 
-        container_client = get_container_storage_client("roms" + "/" + game_type)
+        container_client = get_container_storage_client("roms")
         # List the blobs in the container
         count = 0
         blob_list = container_client.list_blobs()
@@ -149,9 +151,10 @@ def download_new_game_files(server_id):
 
         for blob in blob_list:
             print("\t" + blob.name)
-            with open(file_path + blob.name, "wb") as download_file:
-                download_file.write(blob_client.download_blob(blob.name).readall())
-            count += 1
+            if game_type in blob.name:
+                with open(file_path + blob.name, "wb") as download_file:
+                    download_file.write(blob_client.download_blob(blob.name).readall())
+                count += 1
         print("\nDownloaded " + str(count) + " blobs")
 
     except Exception as ex:
