@@ -1,6 +1,4 @@
 import os
-import shutil
-from time import sleep
 from azure.storage.blob import BlobServiceClient, __version__
 from dotenv import load_dotenv
 from server_properties import get_game_type, initialise_property_file_folder
@@ -168,9 +166,8 @@ def download_server_properties(server_id):
         print(ex)
 
 def download_serverlist(server_id):
-    initialise_property_file_folder(server_id)
-    download_blob(server_id, "global", "serverlist.txt")
+    download_blob(server_id, "global", "serverlist.csv")
 
 
 def upload_serverlist():
-    upload_blob("global", "serverlist.txt", "serverlist.txt")
+    upload_blob("global", "serverlist.csv", "serverlist.csv")

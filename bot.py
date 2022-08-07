@@ -1,6 +1,6 @@
 import os
 import discord
-from az_blob_storage import create_container_storage_client, download_new_game_files, download_save_state, download_server_properties, download_serverlist, upload_properties_file, upload_save_state, upload_serverlist
+from az_blob_storage import *
 from server_properties import *
 from emulator import *
 from dotenv import load_dotenv
@@ -8,6 +8,7 @@ import constants as c
 from emulator import *
 from az_containers import *
 import asyncio
+import server_csv as sc
 
 
 def run():
@@ -20,15 +21,6 @@ def run():
 
     @client.event
     async def on_ready():
-        # If Container ID is not in the serverlist then download the game files and add the server to the serverlist
-        download_serverlist(CONTAINER_ID)
-        if CONTAINER_ID not in get_server_list(CONTAINER_ID):
-            download_server_properties(CONTAINER_ID)
-            download_new_game_files(CONTAINER_ID)
-            append_server(CONTAINER_ID)
-            upload_serverlist(CONTAINER_ID)
-
-        
         print(f'{client.user} has connected to Discord!')
 
     @client.event
@@ -39,6 +31,7 @@ def run():
         server_id = message.guild.id
         server_name = message.guild.name
         #Create directory for server
+        download_serverlist(server_id)
 
         if CONTAINER_ID == "0":
             def check(msg):
@@ -51,17 +44,24 @@ def run():
                 except asyncio.TimeoutError:
                     await message.send("Sorry, you didn't reply in time!")
                     return
+    
                 game_type = msg.content.lower().strip("!")
-                create_container_storage_client(server_id)
-                initialise_property_file(server_id, server_name, game_type)
-                upload_properties_file(server_id)
-                deploy_emulator(server_id)
-                #delete_temp_files(server_id)
+
+                sc.add_rows(server_id, server_name, game_type)
+                group = sc.get_server_id_group(server_id)
+
+                upload_serverlist()
+
+                deploy_emulator(group)
+                
                 await message.channel.send("Part 1 of the game has been deployed. Please wait for the game to start.")           
             return
 
-        if CONTAINER_ID == message.guild.id:
-            filepath = str(server_id) + "/"            
+        # Get group server is in
+        group = sc.get_server_id_group(server_id)
+
+        if CONTAINER_ID == group:
+            filepath = str(server_id) + "/"    
             if message.content == '!a':
                 a_button(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
@@ -117,6 +117,8 @@ def run():
             if message.content == '!id':
                 await message.channel.send("ID: " + str(message.guild.id) + "\n Name: " + str(message.guild.name))
                 return
+        else:
+            return
     
     client.run(TOKEN)
 

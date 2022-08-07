@@ -1,5 +1,4 @@
 import os
-from re import L
 import shutil
 
 def initialise_property_file_folder(server_id):
