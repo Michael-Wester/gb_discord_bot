@@ -15,14 +15,20 @@ jobs:
   - task: Docker@0
     displayName: Build an image
     inputs:
-      azureSubscriptionEndpoint: 015275b2-282c-492d-a290-b5dfb49e1992
-      azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/c85746d6-c5c7-49ab-9776-9066bd461f07/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Azure subscription 1'
+      azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/42a19424-02fe-48a7-a44f-effa93a336bd/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
+      action: 'Build an image'
+      dockerFile: '**/Dockerfile'
+      imageName: '$(Build.Repository.Name):$(Build.BuildId)'
   - task: Docker@0
     displayName: Push an image
     inputs:
-      azureSubscriptionEndpoint: 015275b2-282c-492d-a290-b5dfb49e1992
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Azure subscription 1'
       azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/c85746d6-c5c7-49ab-9776-9066bd461f07/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
-      action: Push an image
+      action: 'Push an image'
+      imageName: '$(Build.Repository.Name):$(Build.BuildId)'
   - task: PublishBuildArtifacts@1    
     displayName: 'Publish Artifact: drop'
     inputs:
