@@ -31,9 +31,9 @@ def run():
         server_id = message.guild.id
         server_name = message.guild.name
         #Create directory for server
-        download_serverlist(server_id)
-
+        download_serverlist()
         if CONTAINER_ID == "0":
+            
             def check(msg):
                 return msg.author == message.author and msg.channel == message.channel and \
                 msg.content.lower() in ["!red", "!green", "!blue", "!yellow", "red", "green", "blue", "yellow"]
@@ -46,7 +46,7 @@ def run():
                     return
     
                 game_type = msg.content.lower().strip("!")
-
+                
                 sc.add_rows(server_id, server_name, game_type)
                 group = sc.get_server_id_group(server_id)
 

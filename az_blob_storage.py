@@ -165,9 +165,14 @@ def download_server_properties(server_id):
         print('Exception:')
         print(ex)
 
-def download_serverlist(server_id):
-    download_blob(server_id, "global", "serverlist.csv")
-
+def download_serverlist():
+    #download_blob(server_id, "global", "serverlist.csv")
+    file_path = ""
+    blob_service_client = create_blob_service_client()
+    blob_client = blob_service_client.get_blob_client(container="global", blob="serverlist.csv")
+    with open(file_path + "serverlist.csv", "wb") as download_file:
+        download_file.write(blob_client.download_blob().readall())
+        download_file.close()
 
 def upload_serverlist():
-    upload_blob("global", "serverlist.csv", "serverlist.csv")
+    upload_blob("global", "serverlist.csv", "")
