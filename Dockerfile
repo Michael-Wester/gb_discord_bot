@@ -19,6 +19,7 @@ COPY . .
 RUN pip install azure-storage-blob
 RUN pip install discord
 RUN pip install python-dotenv
+RUN pip install pandas
 
 # Run the program
 CMD python3 run.py
