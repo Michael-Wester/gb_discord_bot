@@ -30,6 +30,7 @@ def run():
 
         server_id = message.guild.id
         server_name = message.guild.name
+
         #Create directory for server
         download_serverlist()
         if CONTAINER_ID == "0":
@@ -58,7 +59,7 @@ def run():
             return
 
         # Get group server is in
-        group = sc.get_server_id_group(server_id)
+        group = str(sc.get_server_id_group(server_id))
 
         if CONTAINER_ID == group:
             filepath = str(server_id) + "/"    
@@ -119,7 +120,8 @@ def run():
                 return
         else:
             return
-    
+        
+
     client.run(TOKEN)
 
 
