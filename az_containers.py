@@ -12,7 +12,7 @@ def deploy_emulator(server_id):
 
     container_name = str(server_id)
 
-    image_tag = ":95"
+    image_tag = ":97"
 
     image_name = REGISTRY_LOGIN_SERVER + "/michael-wester/gbdiscordbot" + image_tag
     
