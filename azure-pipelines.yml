@@ -17,14 +17,20 @@ jobs:
     env:
       DISCORD_TOKEN: $(DISCORD_TOKEN)
     inputs:
-      azureSubscriptionEndpoint: 42a19424-02fe-48a7-a44f-effa93a336bd
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Azure subscription 1'
       azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/42a19424-02fe-48a7-a44f-effa93a336bd/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
+      action: 'Build an image'
+      dockerFile: '**/Dockerfile'
+      imageName: '$(Build.Repository.Name):$(Build.BuildId)'
   - task: Docker@0
     displayName: Push an image
     inputs:
-      azureSubscriptionEndpoint: 42a19424-02fe-48a7-a44f-effa93a336bd
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Azure subscription 1'
       azureContainerRegistry: '{"loginServer":"discordpokebot.azurecr.io", "id" : "/subscriptions/42a19424-02fe-48a7-a44f-effa93a336bd/resourceGroups/Discordbot/providers/Microsoft.ContainerRegistry/registries/discordpokebot"}'
-      action: Push an image
+      action: 'Push an image'
+      imageName: '$(Build.Repository.Name):$(Build.BuildId)'
   - task: CopyFiles@2
     inputs:
       targetFolder: '$(Build.ArtifactStagingDirectory)'  
