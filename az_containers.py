@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 from server_properties import remove_server
 
-
 def deploy_emulator(server_id):
     load_dotenv()
     
@@ -12,7 +11,7 @@ def deploy_emulator(server_id):
 
     container_name = str(server_id)
 
-    image_tag = ":97"
+    image_tag = ":99"
 
     image_name = REGISTRY_LOGIN_SERVER + "/michael-wester/gbdiscordbot" + image_tag
     

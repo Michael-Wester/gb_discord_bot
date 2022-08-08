@@ -46,7 +46,6 @@ def run():
                     return
     
                 game_type = msg.content.lower().strip("!")
-                
                 sc.add_rows(server_id, server_name, game_type)
                 group = sc.get_server_id_group(server_id)
                 upload_serverlist()
