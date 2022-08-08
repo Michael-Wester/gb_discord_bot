@@ -20,7 +20,7 @@ def run():
     client = discord.Client()
 
     @client.event
-    async def on_ready():
+    async def on_ready():          
         print(f'{client.user} has connected to Discord!')
 
     @client.event
@@ -30,9 +30,8 @@ def run():
 
         server_id = message.guild.id
         server_name = message.guild.name
-
-        #Create directory for server
         download_serverlist()
+
         if CONTAINER_ID == "0":
             
             def check(msg):
@@ -50,10 +49,8 @@ def run():
                 
                 sc.add_rows(server_id, server_name, game_type)
                 group = sc.get_server_id_group(server_id)
-
                 upload_serverlist()
-
-                deploy_emulator(group)
+                deploy_emulator(str(group))
                 
                 await message.channel.send("Part 1 of the game has been deployed. Please wait for the game to start.")           
             return
@@ -66,50 +63,50 @@ def run():
             if message.content == '!a':
                 a_button(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!b':
                 b_button(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!up':
                 up(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!down':
                 down(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!left':
                 left(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!right':
                 right(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!start':
                 start(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!select':
                 select(server_id)
                 await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!download':
                 await message.channel.send('downloading blobs')
-                download_save_state(server_id, server_name)
+                download_save_state(server_id)
                 return
             if message.content == '!upload':
                 await message.channel.send('uploading blobs')
-                upload_save_state(server_id, server_name)
+                upload_save_state(server_id)
                 return
             if message.content == '!keycheck':
                 AZURE_STORAGE_CONNECTION_STRING = os.environ['AZURE_STORAGE_CONNECTION_STRING'] # In Azure there needs to be quotes around the connection string in variables

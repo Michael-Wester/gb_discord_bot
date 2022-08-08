@@ -12,7 +12,7 @@ def double_size(img):
 
 def movement(a, b, server_id):
     server_id = str(server_id)
-    game_type = get_game_type()
+    game_type = get_game_type(server_id)
     pyboy = PyBoy(server_id + '/' + game_type + '.gb')
     pyboy.set_emulation_speed(4)
     if(open(server_id + '/' + game_type + '.state', 'rb').read() != b''):
@@ -22,7 +22,7 @@ def movement(a, b, server_id):
     pyboy.tick()
     pyboy.tick()
     pyboy.send_input(b)
-    for i in range(600):
+    for i in range(120):
         pyboy.tick()
     #pyboy.screen_image().save('ss.png')
     new_img = double_size(pyboy.screen_image())
