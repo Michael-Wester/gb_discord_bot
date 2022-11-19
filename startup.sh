@@ -1,1 +1,1 @@
-gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app
+uvicorn main:app --host https://pokemon-api-testing123.azurewebsites.net --port 8000
