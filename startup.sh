@@ -1,1 +1,1 @@
-uvicorn main:app --host https://pokemon-api-testing123.azurewebsites.net --port 8000
+uvicorn main:app --host 0.0.0.0 --port 8000
