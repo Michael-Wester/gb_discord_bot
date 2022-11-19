@@ -5,4 +5,4 @@ rubbish
 .prettierignore
 *.png
 *.csv
-
+venv
