@@ -14,6 +14,11 @@ def run():
 
     @client.event
     async def on_ready():
+        # SEnd a message to the server with id of 957136740173365320
+        channel = client.get_channel(957136740173365320)
+        await channel.send('hello server_id')
+
+        
         print(f'{client.user} has connected to Discord!')
 
     @client.event
@@ -40,6 +45,10 @@ def run():
             with open("serverlist.csv", 'r') as f:
                 await message.channel.send("Serverlist Size: " + str(len(f.readlines())))
                 return
+        if message.content == '!channelid':
+            await message.channel.send("Channel ID: " + str(message.channel.id))
+            return
+            
     client.run(TOKEN)
 
 run()
