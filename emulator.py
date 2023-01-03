@@ -2,6 +2,7 @@ from pyboy import PyBoy
 from pyboy import WindowEvent
 from PIL import Image
 import constants as c
+from server_properties_editor import *
 
 
 def double_size(img):
