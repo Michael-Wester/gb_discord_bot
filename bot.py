@@ -1,23 +1,19 @@
 import os
 import discord
-from az_blob_storage import *
-from server_properties import *
-from emulator import *
-from dotenv import load_dotenv
-import constants as c
-from emulator import *
-from az_containers import *
+import server_properties_editor as properties
+import emulator as emulator
+import dotenv
 import asyncio
-import server_csv as sc
-
+import server_list_csv_editor as serverlist
+import constants as c
+intents = discord.Intents.all()
 
 def run():
     
-    load_dotenv()
+    dotenv.load_dotenv()
     TOKEN = os.environ['DISCORD_TOKEN']
-    CONTAINER_ID = os.environ['CONTAINER_ID']
-    
-    client = discord.Client()
+
+    client = discord.Client(intents=intents)
 
     @client.event
     async def on_ready():          
@@ -30,93 +26,69 @@ def run():
 
         server_id = message.guild.id
         server_name = message.guild.name
-        download_serverlist()
-
-        if CONTAINER_ID == "0":
+        filepath = str(server_id) + "/" 
             
-            def check(msg):
-                return msg.author == message.author and msg.channel == message.channel and \
-                msg.content.lower() in ["!red", "!green", "!blue", "!yellow", "red", "green", "blue", "yellow"]
-            if message.content == '!newgame':
-                try:
-                    await message.channel.send("Which pokemon game would you like to play? (!red, !green, !blue or !yellow)")
-                    msg = await client.wait_for("message", check=check, timeout=300) # 30 seconds to reply
-                except asyncio.TimeoutError:
-                    await message.send("Sorry, you didn't reply in time!")
-                    return
-    
-                game_type = msg.content.lower().strip("!")
-                sc.add_rows(server_id, server_name, game_type)
-                group = sc.get_server_id_group(server_id)
-                upload_serverlist()
-                deploy_emulator(str(group))
-                
-                await message.channel.send("Part 1 of the game has been deployed. Please wait for the game to start.")           
-            return
+        def check(msg):
+            return msg.author == message.author and msg.channel == message.channel and \
+            msg.content.lower() in ["!red", "!green", "!blue", "!yellow", "red", "green", "blue", "yellow", "silver", "gold", "crystal"]
 
-        # Get group server is in
-        group = str(sc.get_server_id_group(server_id))
+        if message.content == '!newgame':
+            try:
+                await message.channel.send("Which pokemon game would you like to play? (!red, !green, !blue or !yellow)")
+                msg = await client.wait_for("message", check=check, timeout=300) # 30 seconds to reply
+            except asyncio.TimeoutError:
+                await message.send("Sorry, you didn't reply in time!")
+                return
+            game_type = msg.content.lower().strip("!")
+            serverlist.add_rows(server_id, server_name, game_type)
+            properties.initialise_property_file(server_id, server_name, game_type)
+            properties.copy_emulator_files(server_id, game_type)
 
-        if CONTAINER_ID == group:
-            filepath = str(server_id) + "/"    
-            if message.content == '!a':
-                a_button(server_id)
-                await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id)
-                return
-            if message.content == '!b':
-                b_button(server_id)
-                await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id)
-                return
-            if message.content == '!up':
-                up(server_id)
-                await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id)
-                return
-            if message.content == '!down':
-                down(server_id)
-                await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id)
-                return
-            if message.content == '!left':
-                left(server_id)
-                await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id)
-                return
-            if message.content == '!right':
-                right(server_id)
-                await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id)
-                return
-            if message.content == '!start':
-                start(server_id)
-                await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id)
-                return
-            if message.content == '!select':
-                select(server_id)
-                await message.channel.send(file=discord.File(filepath + c.screenshot_name))
-                upload_save_state(server_id)
-                return
-            if message.content == '!download':
-                await message.channel.send('downloading blobs')
-                download_save_state(server_id)
-                return
-            if message.content == '!upload':
-                await message.channel.send('uploading blobs')
-                upload_save_state(server_id)
-                return
-            if message.content == '!keycheck':
-                AZURE_STORAGE_CONNECTION_STRING = os.environ['AZURE_STORAGE_CONNECTION_STRING'] # In Azure there needs to be quotes around the connection string in variables
-                await message.channel.send('Token = ' + AZURE_STORAGE_CONNECTION_STRING)
-                return
-            if message.content == '!id':
-                await message.channel.send("ID: " + str(message.guild.id) + "\n Name: " + str(message.guild.name))
-                return
-        else:
-            return
+            await message.channel.send("Part 1 of the game has been deployed. Please wait for the game to start.") 
+            return  
         
+        if properties.server_exists(server_id) == False:
+            print("server not in list")
+            await message.channel.send("Please start a new game with !newgame")
+            return
+        if message.content == '!a':
+            emulator.a_button(server_id)
+            await message.channel.send(file=discord.File(filepath + c.screenshot_name))
+            return
+        if message.content == '!b':
+            emulator.b_button(server_id)
+            await message.channel.send(file=discord.File(filepath + c.screenshot_name))
+            return
+        if message.content == '!up':
+            emulator.up(server_id)
+            await message.channel.send(file=discord.File(filepath + c.screenshot_name))
+            return
+        if message.content == '!down':
+            emulator.down(server_id)
+            await message.channel.send(file=discord.File(filepath + c.screenshot_name))
+            return
+        if message.content == '!left':
+            emulator.left(server_id)
+            await message.channel.send(file=discord.File(filepath + c.screenshot_name))
+            return
+        if message.content == '!right':
+            emulator.right(server_id)
+            await message.channel.send(file=discord.File(filepath + c.screenshot_name))
+            return
+        if message.content == '!start':
+            emulator.start(server_id)
+            await message.channel.send(file=discord.File(filepath + c.screenshot_name))
+            return
+        if message.content == '!select':
+            emulator.select(server_id)
+            await message.channel.send(file=discord.File(filepath + c.screenshot_name))
+            return
+        if message.content == '!id':
+            await message.channel.send("ID: " + str(message.guild.id) + "\n Name: " + str(message.guild.name))
+            return
+        if message.content == '!help':
+            await message.channel.send("The following commands are available: !newgame !a !b !up !down !left !right !start !select !id !help")
+            return
 
     client.run(TOKEN)
 

@@ -11,3 +11,8 @@ red.gb.ram
 *.properties
 *.csv
 *.gb
+*.gb.ram
+*.gb.rtc
+*.gb.state
+*.state
+devtools

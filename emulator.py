@@ -2,33 +2,32 @@ from pyboy import PyBoy
 from pyboy import WindowEvent
 from PIL import Image
 import constants as c
-from emulator import *
-from server_properties import *
+from server_properties_editor import *
 
 
 def double_size(img):
     new_img = img.resize((img.size[0]*2, img.size[1]*2), Image.ANTIALIAS)
     return new_img
 
-def movement(a, b, server_id):
+def movement(press, release, server_id):
     server_id = str(server_id)
     game_type = get_game_type(server_id)
-    pyboy = PyBoy(server_id + '/' + game_type + '.gb')
-    pyboy.set_emulation_speed(4)
-    if(open(server_id + '/' + game_type + '.state', 'rb').read() != b''):
-        pyboy.load_state(open(server_id + '/' + game_type + '.state', 'rb'))
+    pyboy = PyBoy(server_id + '/' + game_type + '.gb', window_type="headless")
+    if(open(server_id + '/' + game_type + '.gb.state', 'rb').read() != b''):
+        pyboy.load_state(open(server_id + '/' + game_type + '.gb.state', 'rb'))
     pyboy.tick()
-    pyboy.send_input(a)
+    pyboy.send_input(press)
     pyboy.tick()
     pyboy.tick()
-    pyboy.send_input(b)
-    for i in range(120):
+    pyboy.send_input(release)
+    for i in range(60):
         pyboy.tick()
     #pyboy.screen_image().save('ss.png')
     new_img = double_size(pyboy.screen_image())
+    #new_img = pyboy.screen_image()
     new_img.save(server_id + '/' + c.screenshot_name)
     pyboy.tick()
-    pyboy.save_state(open(server_id + '/' + game_type + '.state', 'wb'))
+    pyboy.save_state(open(server_id + '/' + game_type + '.gb.state', 'wb'))
     pyboy.stop()
 
 def a_button(server_id):
