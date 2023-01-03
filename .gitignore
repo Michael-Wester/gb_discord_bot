@@ -16,3 +16,4 @@ red.gb.ram
 *.gb.state
 *.state
 devtools
+venv

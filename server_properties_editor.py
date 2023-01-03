@@ -24,10 +24,15 @@ def get_game_type(server_id):
 def copy_emulator_files(server_id, game_type):
     shutil.copyfile("roms/" + game_type + '/' + game_type +  ".gb", str(server_id) + "/" + game_type + ".gb")
     shutil.copyfile("roms/" + game_type + '/' + game_type +  ".gb.ram", str(server_id) + "/" + game_type + ".gb.ram")
-    shutil.copyfile("roms/" + game_type + '/' + game_type +  ".state", str(server_id) + "/" + game_type + ".state")
+    shutil.copyfile("roms/" + game_type + '/' + game_type +  ".gb.state", str(server_id) + "/" + game_type + ".gb.state")
 
 def server_exists(server_id):
     if os.path.exists(str(server_id)):
         return True
     else:
         return False
+
+def delete_server_folder(server_id):
+    shutil.rmtree(str(server_id))
+    
+

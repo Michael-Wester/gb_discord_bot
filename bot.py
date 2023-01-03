@@ -30,7 +30,7 @@ def run():
             
         def check(msg):
             return msg.author == message.author and msg.channel == message.channel and \
-            msg.content.lower() in ["!red", "!green", "!blue", "!yellow", "red", "green", "blue", "yellow", "silver", "gold", "crystal"]
+            msg.content.lower() in ["!red", "!green", "!blue", "!yellow", "!silver", "!gold", "!crystal", "!coral"]
 
         if message.content == '!newgame':
             try:
@@ -40,6 +40,7 @@ def run():
                 await message.send("Sorry, you didn't reply in time!")
                 return
             game_type = msg.content.lower().strip("!")
+            serverlist.create_serverlist()
             serverlist.add_rows(server_id, server_name, game_type)
             properties.initialise_property_file(server_id, server_name, game_type)
             properties.copy_emulator_files(server_id, game_type)
@@ -88,6 +89,25 @@ def run():
             return
         if message.content == '!help':
             await message.channel.send("The following commands are available: !newgame !a !b !up !down !left !right !start !select !id !help")
+            return
+        if message.content == '!reset':
+            # Confirm reset
+            await message.channel.send("Are you sure you want to reset the server? (y/n)")
+            def check(msg):
+                return msg.author == message.author and msg.channel == message.channel and \
+                msg.content.lower() in ["y", "n"]
+            try:
+                msg = await client.wait_for("message", check=check, timeout=300) # 30 seconds to reply
+            except asyncio.TimeoutError:
+                await message.send("Sorry, you didn't reply in time!")
+                return
+            if msg.content.lower() == "n":
+                await message.channel.send("Server has not been reset")
+                return
+            # Reset server
+            properties.delete_server_folder(server_id)
+            serverlist.delete_server(server_id)
+            await message.channel.send("Server has been reset")
             return
 
     client.run(TOKEN)

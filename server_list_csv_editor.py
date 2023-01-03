@@ -31,3 +31,9 @@ def add_rows(server_id, server_name, game_type, group_size=3):
 def get_server_id_group(server_id):
     df = pd.read_csv('serverlist.csv')
     return df[df['server_id'] == server_id]['group'].values[0]
+
+def delete_server(server_id):
+    df = pd.read_csv('serverlist.csv')
+    df = df[df['server_id'] != server_id]
+    df.to_csv('serverlist.csv', index=False)
+    
