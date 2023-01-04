@@ -6,8 +6,6 @@ from server_properties_editor import *
 logger.log_level("ERROR")
 
 
-
-
 def movement(press, release, server_id):
     server_id = str(server_id)
     game_type = get_game_type(server_id)
@@ -21,10 +19,6 @@ def movement(press, release, server_id):
     pyboy.send_input(release)
     for i in range(60):
         pyboy.tick()
-    #pyboy.screen_image().save('ss.png')
-    # new_img = double_size(pyboy.screen_image())
-    # #new_img = pyboy.screen_image()
-    # new_img.save(server_id + '/' + c.screenshot_name)
     pyboy.tick()
     pyboy.save_state(open(server_id + '/' + game_type + '.gb.state', 'wb'))
     pyboy.stop()
