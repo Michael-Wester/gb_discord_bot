@@ -17,3 +17,4 @@ red.gb.ram
 *.state
 devtools
 venv
+*.gif
