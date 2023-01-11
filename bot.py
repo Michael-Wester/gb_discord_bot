@@ -7,11 +7,18 @@ import asyncio
 import constants as c
 import image_helper as h
 import time
+from PIL import Image
 
 def run():
     
     TOKEN = os.environ['DISCORD_TOKEN']
     client = discord.Client(intents=discord.Intents.all())
+    tree = discord.app_commands.CommandTree(client)
+
+
+    @tree.command(name = "version", description = "The current version of the bot", guild=discord.Object(id=1061914920859484171)) #Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
+    async def first_command(interaction):
+        await interaction.response.send_message("version = " + c.version)
 
     @client.event
     async def on_ready():
@@ -19,13 +26,11 @@ def run():
         for guild in client.guilds:
             print(f"- {guild.id} (name: {guild.name})")
             guild_count = guild_count + 1
+        await tree.sync(guild=discord.Object(id=1061914920859484171))
 
         print(f'{client.user} has connected to Discord!')
         print("bot is in " + str(guild_count) + " guilds.")
 
-    @client.event
-    async def on_join(member):
-        print("joined")
 
     @client.event
     async def on_message(message):
@@ -37,18 +42,19 @@ def run():
         server_folder_path = "servers/" + str(server_id) + "/"
         cmd = str(message.content)[1:]
 
-                  
-        if (os.path.exists(server_folder_path) and str(message.content)[0:1] == c.cmd_prefix) or (properties.server_exists and str(message.content)[0:2] == c.cmd_compound_prefix):
+        prefix = properties.read_server_property_value(server_id, "prefix")
+
+        if (os.path.exists(server_folder_path) and str(message.content)[0:1] == prefix) or (properties.server_exists and str(message.content)[0:2] == c.cmd_compound_prefix):
             def save_emulator_image(emulator_img):
                 properties.increase_turn_count(server_id)
                 if cmd in c.cmd_list:
-                    properties.add_to_command_list(server_id, cmd, properties.get_turn_count(server_id), message.author.name, time.time())
+                    properties.add_to_command_list(server_id, cmd, properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
                 img_file_path = h.save_image(emulator_img, server_id)
                 return img_file_path
 
             def check(msg):
                 return msg.author == message.author and msg.channel == message.channel and \
-                msg.content.lower() in c.list_of_games or msg.content.lower() in [c.cmd_prefix + "y", c.cmd_prefix + "n"]
+                msg.content.lower() in c.list_of_games or msg.content.lower() in [prefix + "y", prefix + "n"]
                 
             if cmd == 'a':
                 img_file_path = save_emulator_image(emulator.a_button(server_id))
@@ -88,17 +94,17 @@ def run():
             if cmd == 'help':
                 cmd_list = []
                 for cmd in c.cmd_list:
-                    cmd_list.append(c.cmd_prefix + cmd)
+                    cmd_list.append(prefix + cmd)
                 await message.channel.send("The following commands are available: " + str(cmd_list))
                 return
             if cmd == 'games':
                 games_list = []
                 for cmd in c.list_of_games:
-                    games_list.append(c.cmd_prefix + cmd)
+                    games_list.append(prefix + cmd)
 
-                embed=discord.Embed(title="Games list", url="https://cdn.discordapp.com/attachments/957136740173365320/1061631724372643920/gameslist.png", description="Here is a list of supported Pokemon games", color=0x004080)
+                embed=discord.Embed(title="Games list", url=c.games_image, description="Here is a list of supported Pokemon games", color=0x004080)
                 embed.add_field(name="Commands to use", value=str(games_list), inline=False)
-                embed.set_image(url="https://cdn.discordapp.com/attachments/957136740173365320/1061555438124027974/games.gif")
+                embed.set_image(url=c.games_gif)
                 await message.channel.send(embed=embed)
                 return 
             if cmd == 'reset':
@@ -116,7 +122,85 @@ def run():
                 await message.channel.send("Server has been reset. Server files are held for 7 days before being permanently deleted. Contact Michle#4142 before the need to restore it") 
                 return
             if cmd == 'newgame':
-                await message.channel.send("Please reset the game using " + c.cmd_prefix + "reset before starting a new game")
+                await message.channel.send("Please reset the game using " + prefix + "reset before starting a new game")
+                return
+            if cmd.startswith('recap'):
+                cmd = cmd.split(" ")
+                if len(cmd) == 1:
+                    await message.channel.send("Please enter a turn number to recap from")
+                    return
+                if cmd[1] == "*":
+                    await message.channel.send("Recapping from turn 1...")
+                    turn_number = properties.read_server_property_value(server_id, "turn_count")
+                    images = []
+                    i = 1
+                    while i < turn_number:
+                        image = Image.open(server_folder_path + "/images/" + str(server_id) + "_" + str(i) + ".png")
+                        images.append(image)
+                        i += 1
+                    h.make_gif(images, server_folder_path + "/images/recap.gif")
+                    await message.channel.send(file=discord.File(server_folder_path + "/images/recap.gif"))
+                    return
+
+                if not cmd[1].isdigit():
+                    await message.channel.send("Please enter a valid turn number")
+                    return
+                if int(cmd[1]) > properties.read_server_property_value(server_id, "turn_count"):
+                    await message.channel.send("Please enter a turn number that is less than the current turn number")
+                    return
+                if int(cmd[1]) < 1:
+                    await message.channel.send("Please enter a turn number that is greater than 0")
+                    return
+                
+                await message.channel.send("Recapping from turn " + cmd[1] + "...")
+                turn_number = properties.read_server_property_value(server_id, "turn_count")
+                images = []
+                i = turn_number - int(cmd[1])
+                while i < turn_number:
+                    image = Image.open(server_folder_path + "/images/" + str(server_id) + "_" + str(i) + ".png")
+                    images.append(image)
+                    i += 1
+                h.make_gif(images, server_folder_path, "/recap.gif")
+                await message.channel.send(file=discord.File(server_folder_path + "/recap.gif"))
+                return
+            if cmd.startswith('prefix'):
+                cmd = cmd.split(" ")
+                if len(cmd) == 1:
+                    await message.channel.send("Please enter a prefix")
+                    return
+                if len(cmd[1]) > 1:
+                    await message.channel.send("Please enter a prefix that is only 1 character long")
+                    return
+                properties.update_server_property_value(server_id, "prefix", cmd[1])
+                await message.channel.send("Prefix has been set to " + cmd[1])
+                return
+            if cmd.startswith('press_tick'):
+                cmd = cmd.split(" ")
+                if len(cmd) == 1:
+                    await message.channel.send("Please enter a tick value")
+                    return
+                if not cmd[1].isdigit():
+                    await message.channel.send("Please enter a valid tick value")
+                    return
+                if int(cmd[1]) < 1:
+                    await message.channel.send("Please enter a tick value that is greater than 0")
+                    return
+                properties.update_server_property_value(server_id, "press_tick", cmd[1])
+                await message.channel.send("Press tick has been set to " + cmd[1])
+                return
+            if cmd.startswith('release_tick'):
+                cmd = cmd.split(" ")
+                if len(cmd) == 1:
+                    await message.channel.send("Please enter a tick value")
+                    return
+                if not cmd[1].isdigit():
+                    await message.channel.send("Please enter a valid tick value")
+                    return
+                if int(cmd[1]) < 1:
+                    await message.channel.send("Please enter a tick value that is greater than 0")
+                    return
+                properties.update_server_property_value(server_id, "release_tick", cmd[1])
+                await message.channel.send("Release tick has been set to " + cmd[1])
                 return
             
             if str(message.content)[0:2] == c.cmd_compound_prefix:
@@ -125,36 +209,36 @@ def run():
                     if char == "w":
                         images.append(h.save_image_frame(emulator.up_button(server_id), server_id))
                         properties.increase_turn_count(server_id)
-                        properties.add_to_command_list(server_id, char, properties.get_turn_count(server_id), message.author.name, time.time())
+                        properties.add_to_command_list(server_id, char, properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
                     if char == "a":
                         images.append(h.save_image_frame(emulator.left_button(server_id), server_id))
                         properties.increase_turn_count(server_id)
-                        properties.add_to_command_list(server_id, "A", properties.get_turn_count(server_id), message.author.name, time.time())
+                        properties.add_to_command_list(server_id, "A", properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
                     if char == "s":
                         images.append(h.save_image_frame(emulator.down_button(server_id), server_id))
                         properties.increase_turn_count(server_id)
-                        properties.add_to_command_list(server_id, char, properties.get_turn_count(server_id), message.author.name, time.time())
+                        properties.add_to_command_list(server_id, char, properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
                     if char == "d":
                         images.append(h.save_image_frame(emulator.right_button(server_id), server_id))
                         properties.increase_turn_count(server_id)
-                        properties.add_to_command_list(server_id, char, properties.get_turn_count(server_id), message.author.name, time.time())
+                        properties.add_to_command_list(server_id, char, properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
                     if char == "e":
                         images.append(h.save_image_frame(emulator.a_button(server_id), server_id))
                         properties.increase_turn_count(server_id)
-                        properties.add_to_command_list(server_id, char, properties.get_turn_count(server_id), message.author.name, time.time())
+                        properties.add_to_command_list(server_id, char, properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
                     if char == "q":
                         images.append(h.save_image_frame(emulator.b_button(server_id), server_id))
                         properties.increase_turn_count(server_id)
-                        properties.add_to_command_list(server_id, char, properties.get_turn_count(server_id), message.author.name, time.time())
+                        properties.add_to_command_list(server_id, char, properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
                     if char == "r":
                         images.append(h.save_image_frame(emulator.start_button(server_id), server_id))
                         properties.increase_turn_count(server_id)
-                        properties.add_to_command_list(server_id, char, properties.get_turn_count(server_id), message.author.name, time.time())
+                        properties.add_to_command_list(server_id, char, properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
                     if char == "f":
                         images.append(h.save_image_frame(emulator.select_button(server_id), server_id))
                         properties.increase_turn_count(server_id)
-                        properties.add_to_command_list(server_id, cmd, properties.get_turn_count(server_id), message.author.name, time.time())
-                h.make_gif(images, server_folder_path)
+                        properties.add_to_command_list(server_id, cmd, properties.read_server_property_value(server_id, "turn_count"), message.author.name, time.time())
+                h.make_gif(images, server_folder_path, "move.gif")
                 await message.channel.send(file=discord.File(server_folder_path + c.gif_name))
                 return
 
@@ -174,13 +258,13 @@ def run():
                     for cmd in c.list_of_games:
                         games_list.append(c.cmd_prefix + cmd)
                     
-                    embed=discord.Embed(title="Games list", url="https://cdn.discordapp.com/attachments/957136740173365320/1061631724372643920/gameslist.png", description="Here is a list of supported Pokemon games", color=0x004080)
+                    embed=discord.Embed(title="Games list", url=c.games_image, description="Here is a list of supported Pokemon games", color=0x004080)
                     embed.add_field(name="Commands to use", value=str(games_list), inline=False)
-                    embed.set_image(url="https://cdn.discordapp.com/attachments/957136740173365320/1061555438124027974/games.gif")
+                    embed.set_image(url=c.games_gif)
                     await message.channel.send(embed=embed)
                     msg = await client.wait_for("message", check=check, timeout=15) # 30 seconds to reply
                 except asyncio.TimeoutError:
-                    await message.channel.send("<:octagonal_sign:1061655413151498340> **Sorry " + str(message.author) + ", either you didn't reply in time or you didn't reply with a valid game type** <:octagonal_sign:1061655413151498340>")
+                    await message.channel.send(c.octagonal_sign + "**Sorry " + str(message.author) + ", either you didn't reply in time or you didn't reply with a valid game type**" + c.octagonal_sign)
                     return
                 
                 game_type = msg.content.lower().strip(c.cmd_prefix)
