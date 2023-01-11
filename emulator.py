@@ -7,20 +7,23 @@ logger.log_level("ERROR")
 
 
 def movement(press, release, server_id):
-    server_id = str(server_id)
+    server_folder_path = "servers/" + str(server_id) + "/"
+    press_tick = int(read_server_property_value(server_id, "press_tick"))
+    release_tick = int(read_server_property_value(server_id, "release_tick"))
     game_type = get_game_type(server_id)
-    pyboy = PyBoy("servers/" + server_id + '/' + game_type + '.gb', window_type="headless")
-    if(open("servers/" + server_id + '/' + game_type + '.gb.state', 'rb').read() != b''):
-        pyboy.load_state(open("servers/" + server_id + '/' + game_type + '.gb.state', 'rb'))
-    pyboy.tick()
+    pyboy = PyBoy(server_folder_path + game_type + '.gb', window_type="headless")
+    if(open(server_folder_path + game_type + '.gb.state', 'rb').read() != b''):
+        pyboy.load_state(open(server_folder_path + game_type + '.gb.state', 'rb'))
+
     pyboy.send_input(press)
-    pyboy.tick()
-    pyboy.tick()
-    pyboy.send_input(release)
-    for i in range(60):
+    for i in range(press_tick):
         pyboy.tick()
-    pyboy.tick()
-    pyboy.save_state(open("servers/" + server_id + '/' + game_type + '.gb.state', 'wb'))
+
+    pyboy.send_input(release)
+    for i in range(release_tick):
+        pyboy.tick()
+
+    pyboy.save_state(open(server_folder_path + game_type + '.gb.state', 'wb'))
     pyboy.stop()
     return pyboy.screen_image()
 
