@@ -16,21 +16,12 @@ def run():
     client = discord.Client(intents=discord.Intents.all())
     tree = discord.app_commands.CommandTree(client)
 
-    @tree.command(
-        name="version",
-        description="The current version of the bot",
-        guild=discord.Object(id=1061914920859484171),
-    )  # Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
-    async def first_command(interaction):
-        await interaction.response.send_message("version = " + c.version)
-
     @client.event
     async def on_ready():
         guild_count = 0
         for guild in client.guilds:
             print(f"- {guild.id} (name: {guild.name})")
             guild_count = guild_count + 1
-        await tree.sync(guild=discord.Object(id=1061914920859484171))
 
         print(f"{client.user} has connected to Discord!")
         print("bot is in " + str(guild_count) + " guilds.")
@@ -44,8 +35,9 @@ def run():
         server_name = message.guild.name
         server_folder_path = "servers/" + str(server_id) + "/"
         cmd = str(message.content)[1:]
-
-        prefix = properties.read_server_property_value(server_id, "prefix")
+        
+        if properties.read_server_property_value(server_id, "prefix") != None:
+            prefix = properties.read_server_property_value(server_id, "prefix")
 
         if (
             os.path.exists(server_folder_path) and str(message.content)[0:1] == prefix
