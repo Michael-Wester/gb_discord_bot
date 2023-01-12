@@ -35,9 +35,10 @@ def run():
         server_folder_path = "servers/" + str(server_id) + "/"
         cmd = str(message.content)[1:]
         
-        if properties.read_server_property_value(server_id, "prefix") != None:
+        try:
             prefix = properties.read_server_property_value(server_id, "prefix")
-
+        except:
+            print("Server properties not found.")
         if (
             os.path.exists(server_folder_path) and str(message.content)[0:1] == prefix
         ) or (
