@@ -14,7 +14,6 @@ def run():
 
     TOKEN = os.environ["DISCORD_TOKEN"]
     client = discord.Client(intents=discord.Intents.all())
-    tree = discord.app_commands.CommandTree(client)
 
     @client.event
     async def on_ready():
