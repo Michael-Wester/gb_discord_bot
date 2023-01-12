@@ -26,21 +26,16 @@ def initialise_property_file(server_id, server_name, game_type):
     server_properties_file.write("cmp_prefix=!!\n")
     server_properties_file.write("press_tick=4\n")
     server_properties_file.write("release_tick=60\n")
-    server_properties_file.write("progress_bar=0")
-    server_properties_file.write("progress_bar_height=0")
-    server_properties_file.write("progress_bar_colour=red")
-    server_properties_file.write("cmd_set=1")
+    server_properties_file.write("progress_bar=0\n")
+    server_properties_file.write("progress_bar_height=0\n")
+    server_properties_file.write("progress_bar_colour=red\n")
+    server_properties_file.write("cmd_set=1\n")
 
     server_properties_file.close()
 
 
 def get_game_type(server_id):
-    server_properties_file = open(
-        "servers/" + str(server_id) + "/" + str(server_id) + ".properties", "r"
-    )
-    game_type = server_properties_file.read().split("\n")
-    game_type = game_type[2].split("=")[1]
-    server_properties_file.close()
+    game_type = read_server_property_value(server_id, "game_type")
     return game_type
 
 

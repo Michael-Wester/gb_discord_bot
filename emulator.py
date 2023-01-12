@@ -11,7 +11,7 @@ def movement(press, release, server_id):
     server_folder_path = "servers/" + str(server_id) + "/"
     press_tick = int(read_server_property_value(server_id, "press_tick"))
     release_tick = int(read_server_property_value(server_id, "release_tick"))
-    game_type = get_game_type(server_id)
+    game_type = read_server_property_value(server_id, "game_type")
     pyboy = PyBoy(server_folder_path + game_type + ".gb", window_type="headless")
     if open(server_folder_path + game_type + ".gb.state", "rb").read() != b"":
         pyboy.load_state(open(server_folder_path + game_type + ".gb.state", "rb"))
