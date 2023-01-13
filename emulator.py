@@ -29,7 +29,11 @@ def movement(server_id, pyboy, press, release):
     for i in range(release_tick):
         pyboy.tick()
 
+    return pyboy
+
+def save_screenshot(pyboy):
     return pyboy.screen_image()
+    
 
 
 def save_and_stop(server_id, pyboy):
@@ -40,8 +44,9 @@ def save_and_stop(server_id, pyboy):
 
 
 def command(server_id, press, release):
-    load_game(server_id)
-    img = movement(press, release, server_id)
-    save_and_stop(server_id)
+    pyboy = load_game(server_id)
+    pyboy = movement(server_id, pyboy, press, release)
+    img = save_screenshot(pyboy)
+    save_and_stop(server_id, pyboy)
     return img
 
