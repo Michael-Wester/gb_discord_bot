@@ -3,6 +3,7 @@ import discord
 import server_properties_editor as properties
 import server_list_csv_editor as serverlist
 import emulator as emulator
+from pyboy import WindowEvent as we
 import asyncio
 import constants as c
 import image_helper as h
@@ -68,37 +69,38 @@ def run():
                 )
 
             if cmd == "a":
-                img_file_path = save_emulator_image(emulator.a_button(server_id))
+                img_file_path = save_emulator_image(emulator.command(server_id, we.PRESS_BUTTON_A, we.RELEASE_BUTTON_A))
                 await message.channel.send(file=discord.File(img_file_path))
                 return
             if cmd == "b":
-                img_file_path = save_emulator_image(emulator.b_button(server_id))
+                img_file_path = save_emulator_image(emulator.command(server_id, we.PRESS_BUTTON_B, we.RELEASE_BUTTON_B))
                 await message.channel.send(file=discord.File(img_file_path))
                 return
             if cmd == "up":
-                img_file_path = save_emulator_image(emulator.up_button(server_id))
+                img_file_path = save_emulator_image(emulator.command(server_id, we.PRESS_ARROW_UP, we.RELEASE_ARROW_UP))
                 await message.channel.send(file=discord.File(img_file_path))
                 return
             if cmd == "down":
-                img_file_path = save_emulator_image(emulator.down_button(server_id))
+                img_file_path = save_emulator_image(emulator.command(server_id, we.PRESS_ARROW_DOWN, we.RELEASE_ARROW_DOWN))
                 await message.channel.send(file=discord.File(img_file_path))
                 return
             if cmd == "left":
-                img_file_path = save_emulator_image(emulator.left_button(server_id))
+                img_file_path = save_emulator_image(emulator.command(server_id, we.PRESS_ARROW_LEFT, we.RELEASE_ARROW_LEFT))
                 await message.channel.send(file=discord.File(img_file_path))
                 return
             if cmd == "right":
-                img_file_path = save_emulator_image(emulator.right_button(server_id))
+                img_file_path = save_emulator_image(emulator.command(server_id, we.PRESS_ARROW_RIGHT, we.RELEASE_ARROW_RIGHT))
                 await message.channel.send(file=discord.File(img_file_path))
                 return
             if cmd == "start":
-                img_file_path = save_emulator_image(emulator.start_button(server_id))
+                img_file_path = save_emulator_image(emulator.command(server_id, we.PRESS_BUTTON_START, we.RELEASE_BUTTON_START))
                 await message.channel.send(file=discord.File(img_file_path))
                 return
             if cmd == "select":
-                img_file_path = save_emulator_image(emulator.select_button(server_id))
+                img_file_path = save_emulator_image(emulator.command(server_id, we.PRESS_BUTTON_SELECT, we.RELEASE_BUTTON_SELECT))
                 await message.channel.send(file=discord.File(img_file_path))
                 return
+                
             if cmd == "id":
                 await message.channel.send(
                     "ID: "
@@ -344,35 +346,35 @@ def run():
                 for char in str(message.content)[2:]:
                     if char == cmd_list[0]:
                         images = append_image(
-                            server_id, images, emulator.up_button(server_id)
+                            server_id, images, emulator.command(server_id, we.PRESS_ARROW_UP, we.RELEASE_ARROW_UP)
                         )
                     if char == cmd_list[1]:
                         images = append_image(
-                            server_id, images, emulator.left_button(server_id)
+                            server_id, images, emulator.command(server_id , we.PRESS_ARROW_LEFT, we.RELEASE_ARROW_LEFT)
                         )
                     if char == cmd_list[2]:
                         images = append_image(
-                            server_id, images, emulator.down_button(server_id)
+                            server_id, images, emulator.command(server_id, we.PRESS_ARROW_DOWN, we.RELEASE_ARROW_DOWN)
                         )
                     if char == cmd_list[3]:
                         images = append_image(
-                            server_id, images, emulator.right_button(server_id)
+                            server_id, images, emulator.command(server_id, we.PRESS_ARROW_RIGHT, we.RELEASE_ARROW_RIGHT)
                         )
                     if char == cmd_list[4]:
                         images = append_image(
-                            server_id, images, emulator.a_button(server_id)
+                            server_id, images, emulator.command(server_id, we.PRESS_BUTTON_A, we.RELEASE_BUTTON_A)
                         )
                     if char == cmd_list[5]:
                         images = append_image(
-                            server_id, images, emulator.b_button(server_id)
+                            server_id, images, emulator.command(server_id, we.PRESS_BUTTON_B, we.RELEASE_BUTTON_B)
                         )
                     if char == cmd_list[6]:
                         images = append_image(
-                            server_id, images, emulator.start_button(server_id)
+                            server_id, images, emulator.command(server_id, we.PRESS_BUTTON_START, we.RELEASE_BUTTON_START)
                         )
                     if char == cmd_list[7]:
                         images = append_image(
-                            server_id, images, emulator.select_button(server_id)
+                            server_id, images, emulator.command(server_id, we.PRESS_BUTTON_SELECT, we.RELEASE_BUTTON_SELECT)
                         )
                 h.make_gif(images, server_folder_path, "move.gif", server_id)
                 await message.channel.send(
