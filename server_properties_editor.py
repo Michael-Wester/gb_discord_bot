@@ -41,13 +41,13 @@ def get_server_properties(server_id):
     return server_properties
 
 
-def reinitialise_property_file(server_id, server_name, game_type, overwrite):
+def reinitialise_property_file(server_id):
     property_list = [
         ("date_created", "0"),
         ("owner_id", "0"),
-        ("server_id", str(server_id)),
-        ("server_name", str(server_name)),
-        ("game_type", game_type),
+        ("server_id", "id"),
+        ("server_name", "name"),
+        ("game_type", "red"),
         ("turn_count", "0"),
         ("prefix", "!"),
         ("cmp_prefix", "!!"),
@@ -59,7 +59,7 @@ def reinitialise_property_file(server_id, server_name, game_type, overwrite):
         ("cmd_set", "1")       
     ]
     for property, default_value in property_list:
-        if (read_server_property(server_id, property) == None) and (overwrite == 0):
+        if (read_server_property(server_id, property) == None):
             with open("servers/" + str(server_id) + "/" + str(server_id) + ".properties", "a") as f:
                 f.write(str(property) + "=" + str(default_value) + "\n")
 
@@ -70,17 +70,19 @@ def get_game_type(server_id):
 
 
 def copy_emulator_files(server_id, game_type):
+    roms_folder = "roms/" + game_type + "/"
+    server_folder = "servers/" + str(server_id) + "/"
     shutil.copyfile(
-        "roms/" + game_type + "/" + game_type + ".gb",
-        "servers/" + str(server_id) + "/" + game_type + ".gb",
+        roms_folder + game_type + ".gb",
+        server_folder + game_type + ".gb",
     )
     shutil.copyfile(
-        "roms/" + game_type + "/" + game_type + ".gb.ram",
-        "servers/" + str(server_id) + "/" + game_type + ".gb.ram",
+        roms_folder + game_type + ".gb.ram",
+        server_folder + game_type + ".gb.ram",
     )
     shutil.copyfile(
-        "roms/" + game_type + "/" + game_type + ".gb.state",
-        "servers/" + str(server_id) + "/" + game_type + ".gb.state",
+        roms_folder + game_type + ".gb.state",
+        server_folder + game_type + ".gb.state",
     )
 
 def delete_server_folder(server_id):
