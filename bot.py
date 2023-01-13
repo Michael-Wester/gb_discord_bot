@@ -43,7 +43,7 @@ def run():
         if (
             os.path.exists(server_folder_path) and str(message.content)[0:1] == prefix
         ) or (
-            properties.server_exists
+            os.path.exists(server_folder_path)
             and str(message.content)[0:2] == c.cmd_compound_prefix
         ):
 
