@@ -35,6 +35,7 @@ def run():
         server_name = message.guild.name
         server_folder_path = "servers/" + str(server_id) + "/"
         cmd = str(message.content)[1:]
+        time_start = time.time()
         
         try:
             prefix = properties.read_server_property_value(server_id, "prefix")
@@ -304,8 +305,11 @@ def run():
                 properties.update_server_property_value(server_id, "bar_colour", cmd[1])
                 await message.channel.send("Bar colour has been set to " + cmd[1])
                 return
+            if cmd == 'reinit':
+                properties.reinitialise_property_file(server_id)
 
             if str(message.content)[0:2] == c.cmd_compound_prefix:
+                
 
                 def get_cmd_list(server_id):
                     cmd_list_1 = ["w", "a", "s", "d", "e", "q", "r", "f"]
@@ -342,44 +346,50 @@ def run():
 
                 images = []
                 cmd_list = get_cmd_list(server_id)
+                pyboy = emulator.load_game(server_id)
+                guild = client.get_guild(957136739632295966)
+                channel = guild.get_channel(1063468447415160904)
 
                 for char in str(message.content)[2:]:
                     if char == cmd_list[0]:
-                        images = append_image(
-                            server_id, images, emulator.command(server_id, we.PRESS_ARROW_UP, we.RELEASE_ARROW_UP)
-                        )
+                        emulator.movement(server_id, pyboy, we.PRESS_ARROW_UP, we.RELEASE_ARROW_UP)
+                        img = emulator.save_screenshot(pyboy)
+                        images = append_image(server_id, images, img)                        
                     if char == cmd_list[1]:
-                        images = append_image(
-                            server_id, images, emulator.command(server_id , we.PRESS_ARROW_LEFT, we.RELEASE_ARROW_LEFT)
-                        )
+                        emulator.movement(server_id, pyboy, we.PRESS_ARROW_LEFT, we.RELEASE_ARROW_LEFT)
+                        img = emulator.save_screenshot(pyboy)
+                        images = append_image(server_id, images, img)
                     if char == cmd_list[2]:
-                        images = append_image(
-                            server_id, images, emulator.command(server_id, we.PRESS_ARROW_DOWN, we.RELEASE_ARROW_DOWN)
-                        )
+                        emulator.movement(server_id, pyboy, we.PRESS_ARROW_DOWN, we.RELEASE_ARROW_DOWN)
+                        img = emulator.save_screenshot(pyboy)
+                        images = append_image(server_id, images, img)
                     if char == cmd_list[3]:
-                        images = append_image(
-                            server_id, images, emulator.command(server_id, we.PRESS_ARROW_RIGHT, we.RELEASE_ARROW_RIGHT)
-                        )
+                        emulator.movement(server_id, pyboy, we.PRESS_ARROW_RIGHT, we.RELEASE_ARROW_RIGHT)
+                        img = emulator.save_screenshot(pyboy)
+                        images = append_image(server_id, images, img)
                     if char == cmd_list[4]:
-                        images = append_image(
-                            server_id, images, emulator.command(server_id, we.PRESS_BUTTON_A, we.RELEASE_BUTTON_A)
-                        )
+                        emulator.movement(server_id, pyboy, we.PRESS_BUTTON_A, we.RELEASE_BUTTON_A)
+                        img = emulator.save_screenshot(pyboy)
+                        images = append_image(server_id, images, img)
                     if char == cmd_list[5]:
-                        images = append_image(
-                            server_id, images, emulator.command(server_id, we.PRESS_BUTTON_B, we.RELEASE_BUTTON_B)
-                        )
+                        emulator.movement(server_id, pyboy, we.PRESS_BUTTON_B, we.RELEASE_BUTTON_B)
+                        img = emulator.save_screenshot(pyboy)
+                        images = append_image(server_id, images, img)
                     if char == cmd_list[6]:
-                        images = append_image(
-                            server_id, images, emulator.command(server_id, we.PRESS_BUTTON_START, we.RELEASE_BUTTON_START)
-                        )
+                        emulator.movement(server_id, pyboy, we.PRESS_BUTTON_START, we.RELEASE_BUTTON_START)
+                        img = emulator.save_screenshot(pyboy)
+                        images = append_image(server_id, images, img)
                     if char == cmd_list[7]:
-                        images = append_image(
-                            server_id, images, emulator.command(server_id, we.PRESS_BUTTON_SELECT, we.RELEASE_BUTTON_SELECT)
-                        )
+                        emulator.movement(server_id, pyboy, we.PRESS_BUTTON_SELECT, we.RELEASE_BUTTON_SELECT)
+                        img = emulator.save_screenshot(pyboy)
+                        images = append_image(server_id, images, img)
+                emulator.save_and_stop(server_id, pyboy)
                 h.make_gif(images, server_folder_path, "move.gif", server_id)
+                time_end = time.time() - time_start
                 await message.channel.send(
                     file=discord.File(server_folder_path + c.gif_name)
                 )
+                await message.channel.send( "Time taken: " + str(time_end) + " seconds AFTER optimisation")
                 return
             print("Unrecognised command")
             return
