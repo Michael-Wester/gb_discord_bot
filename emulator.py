@@ -1,7 +1,5 @@
 from pyboy import PyBoy
-from pyboy import WindowEvent
 from pyboy import logger
-import constants as c
 from server_properties_editor import *
 
 logger.log_level("ERROR")
@@ -31,9 +29,9 @@ def movement(server_id, pyboy, press, release):
 
     return pyboy
 
+
 def save_screenshot(pyboy):
     return pyboy.screen_image()
-    
 
 
 def save_and_stop(server_id, pyboy):
@@ -49,4 +47,3 @@ def command(server_id, press, release):
     img = save_screenshot(pyboy)
     save_and_stop(server_id, pyboy)
     return img
-

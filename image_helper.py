@@ -33,7 +33,6 @@ def save_image_frame(img, server_id):
 
 
 def make_gif(images, filepath, filename, server_id):
-    # images = images
     bar_height = int(
         properties.read_server_property_value(server_id, "progress_bar_height")
     )

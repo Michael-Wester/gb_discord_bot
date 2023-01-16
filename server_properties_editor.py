@@ -1,6 +1,7 @@
 import os
 import shutil
 
+
 def initialise_property_file(server_id, server_name, game_type):
     if not os.path.exists("servers/"):
         os.mkdir("servers/")
@@ -32,6 +33,7 @@ def initialise_property_file(server_id, server_name, game_type):
 
     server_properties_file.close()
 
+
 def get_server_properties(server_id):
     server_properties_file = open(
         "servers/" + str(server_id) + "/" + str(server_id) + ".properties", "r"
@@ -56,14 +58,16 @@ def reinitialise_property_file(server_id):
         ("progress_bar", "0"),
         ("progress_bar_height", "0"),
         ("progress_bar_colour", "red"),
-        ("cmd_set", "1")       
+        ("cmd_set", "1"),
     ]
     for property, default_value in property_list:
-        if (read_server_property(server_id, property) == None):
-            with open("servers/" + str(server_id) + "/" + str(server_id) + ".properties", "a") as f:
+        if read_server_property(server_id, property) == None:
+            with open(
+                "servers/" + str(server_id) + "/" + str(server_id) + ".properties", "a"
+            ) as f:
                 f.write(str(property) + "=" + str(default_value) + "\n")
 
-        
+
 def get_game_type(server_id):
     game_type = read_server_property_value(server_id, "game_type")
     return game_type
@@ -84,6 +88,7 @@ def copy_emulator_files(server_id, game_type):
         roms_folder + game_type + ".gb.state",
         server_folder + game_type + ".gb.state",
     )
+
 
 def delete_server_folder(server_id):
     shutil.move("servers/" + str(server_id), "server_bin")
@@ -107,15 +112,15 @@ def read_server_property_value(server_id, property):
     for i in range(len(server_properties)):
         if server_properties[i].split("=")[0] == property:
             return server_properties[i].split("=")[1]
-        
-        
+
+
 def read_server_property(server_id, property):
     server_properties = get_server_properties(server_id)
     for i in range(len(server_properties)):
         if server_properties[i].split("=")[0] == property:
             return server_properties[i].split("=")[0]
     return None
-        
+
 
 def increase_turn_count(server_id):
     turn_count = read_server_property_value(server_id, "turn_count")
@@ -126,4 +131,3 @@ def increase_turn_count(server_id):
 def add_to_command_list(server_id, cmd, turn_count, author, time):
     with open("servers/" + str(server_id) + "/" + str(server_id) + ".data", "a") as f:
         f.write(cmd + "," + str(turn_count) + "," + author + "," + str(time) + "\n")
-

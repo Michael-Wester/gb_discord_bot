@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import emulator as emulator
-from pyboy import WindowEvent as we
 import server_properties_editor as properties
 import server_list_csv_editor as serverlist
 import time
@@ -15,37 +14,34 @@ from PIL import Image
 class properties_cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
-        
+
     @commands.Cog.listener()
     async def on_ready(self):
-        print('properties loaded')
-        
-        
+        print("properties loaded")
+
     @commands.Cog.listener()
     async def on_message(self, message):
         client = self.bot
         if message.author == client.user:
             return
-        
+
         server_id = message.guild.id
         server_name = message.guild.name
         server_folder_path = "servers/" + str(server_id) + "/"
         cmd = str(message.content)[1:]
         time_start = time.time()
 
-        
-        if (os.path.exists(server_folder_path) == False):
+        if os.path.exists(server_folder_path) == False:
             return
 
         try:
             prefix = properties.read_server_property_value(server_id, "prefix")
         except:
             print("Server properties not found.")
-            
-        if (str(message.content)[0:1] != prefix):
+
+        if str(message.content)[0:1] != prefix:
             return
-        
+
         def check(msg):
             reply_list = ["yes", "no", "y", "n"]
             for reply in reply_list:
@@ -55,7 +51,7 @@ class properties_cog(commands.Cog):
                 and msg.channel == message.channel
                 and msg.content.lower() in reply_list
             )
-        
+
         if cmd == "help":
             cmd_list = []
             for cmd in c.cmd_list:
@@ -74,9 +70,7 @@ class properties_cog(commands.Cog):
                 description="Here is a list of supported Pokemon games",
                 color=0x004080,
             )
-            embed.add_field(
-                name="Commands to use", value=str(games_list), inline=False
-            )
+            embed.add_field(name="Commands to use", value=str(games_list), inline=False)
             embed.set_image(url=c.games_gif)
             await message.channel.send(embed=embed)
             return
@@ -115,9 +109,7 @@ class properties_cog(commands.Cog):
                 properties.read_server_property_value(server_id, "turn_count")
             )
             if len(cmd) == 1:
-                await message.channel.send(
-                    "Please enter a turn number to recap from"
-                )
+                await message.channel.send("Please enter a turn number to recap from")
                 return
             if cmd[1] == "*":
                 await message.channel.send("Recapping from turn 1...")
@@ -212,9 +204,7 @@ class properties_cog(commands.Cog):
                     "Please enter a tick value that is greater than 0"
                 )
                 return
-            properties.update_server_property_value(
-                server_id, "release_tick", cmd[1]
-            )
+            properties.update_server_property_value(server_id, "release_tick", cmd[1])
             await message.channel.send("Release tick has been set to " + cmd[1])
             return
         if cmd.startswith("cmd_set"):
@@ -246,8 +236,9 @@ class properties_cog(commands.Cog):
             properties.update_server_property_value(server_id, "bar_colour", cmd[1])
             await message.channel.send("Bar colour has been set to " + cmd[1])
             return
-        if cmd == 'reinit':
+        if cmd == "reinit":
             properties.reinitialise_property_file(server_id)
+
 
 async def setup(bot):
     await bot.add_cog(properties_cog(bot))
