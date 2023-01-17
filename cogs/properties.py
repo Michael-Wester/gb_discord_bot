@@ -57,7 +57,7 @@ class properties_cog(commands.Cog):
             for cmd in c.cmd_list:
                 cmd_list.append(prefix + cmd)
             await message.channel.send(
-                "The following commands are available: " + str(cmd_list)
+                "The following commands are available: " + str(cmd_list) + " Compound commands can also be used with " + c.cmd_compound_prefix
             )
             return
         if cmd == "games":

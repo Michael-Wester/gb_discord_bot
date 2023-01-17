@@ -25,9 +25,9 @@ def initialise_property_file(server_id, server_name, game_type):
     server_properties_file.write("prefix=!\n")
     server_properties_file.write("cmp_prefix=!!\n")
     server_properties_file.write("press_tick=4\n")
-    server_properties_file.write("release_tick=60\n")
+    server_properties_file.write("release_tick=120\n")
     server_properties_file.write("progress_bar=0\n")
-    server_properties_file.write("progress_bar_height=0\n")
+    server_properties_file.write("progress_bar_height=3\n")
     server_properties_file.write("progress_bar_colour=red\n")
     server_properties_file.write("cmd_set=1\n")
 
@@ -54,9 +54,9 @@ def reinitialise_property_file(server_id):
         ("prefix", "!"),
         ("cmp_prefix", "!!"),
         ("press_tick", "4"),
-        ("release_tick", "60"),
+        ("release_tick", "120"),
         ("progress_bar", "0"),
-        ("progress_bar_height", "0"),
+        ("progress_bar_height", "3"),
         ("progress_bar_colour", "red"),
         ("cmd_set", "1"),
     ]

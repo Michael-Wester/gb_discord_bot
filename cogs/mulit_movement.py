@@ -25,9 +25,7 @@ class multi_movement(commands.Cog):
             return
 
         server_id = message.guild.id
-        server_name = message.guild.name
         server_folder_path = "servers/" + str(server_id) + "/"
-        cmd = str(message.content)[1:]
         time_start = time.time()
 
         if os.path.exists(server_folder_path) == False:
@@ -58,11 +56,6 @@ class multi_movement(commands.Cog):
                     time.time(),
                 )
                 return image_array
-
-            def general(server_id, pyboy, images, press, release):
-                emulator.movement(server_id, pyboy, press, release)
-                img = emulator.save_screenshot(pyboy)
-                images = append_image(server_id, images, img)
 
             images = []
             cmd_list = get_cmd_list(server_id)
@@ -126,9 +119,6 @@ class multi_movement(commands.Cog):
             time_end = time.time() - time_start
             await message.channel.send(
                 file=discord.File(server_folder_path + c.gif_name)
-            )
-            await message.channel.send(
-                "Time taken: " + str(time_end) + " seconds AFTER optimisation"
             )
             return
 
