@@ -3,10 +3,13 @@ import discord
 import emulator as emulator
 import asyncio
 from discord.ext import commands
+import dotenv
 
 
 def run():
-    TOKEN = os.environ["DISCORD_TOKEN"]
+    dotenv.load_dotenv()
+    
+    TOKEN = os.environ['DISCORD_TOKEN']
 
     bot = commands.Bot(command_prefix="", intents=discord.Intents.all())
 

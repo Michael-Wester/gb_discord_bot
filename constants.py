@@ -1,8 +1,3 @@
-import dotenv
-
-dotenv.load_dotenv()
-
-
 gif_name = "move.gif"
 cmd_prefix = "!"
 cmd_compound_prefix = "!!"
