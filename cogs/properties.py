@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import emulator as emulator
-import server_properties_editor as properties
+import server_properties_editor as p
 import server_list_csv_editor as serverlist
 import time
 import image_helper as h
@@ -35,21 +35,16 @@ class properties_cog(commands.Cog):
             return
 
         try:
-            prefix = properties.read_server_property_value(server_id, "prefix")
+            prefix = p.read_value(server_id, "prefix")
         except:
-            print("Server properties not found.")
+            print("Server properties not fzzound.")
 
         if str(message.content)[0:1] != prefix:
             return
-
         def check(msg):
-            reply_list = ["yes", "no", "y", "n"]
-            for reply in reply_list:
-                reply_list.append(prefix + reply)
             return (
                 msg.author == message.author
                 and msg.channel == message.channel
-                and msg.content.lower() in reply_list
             )
 
         if cmd == "help":
@@ -74,24 +69,7 @@ class properties_cog(commands.Cog):
             embed.set_image(url=c.games_gif)
             await message.channel.send(embed=embed)
             return
-        if cmd == "reset":
-            await message.channel.send(
-                "Are you sure you want to reset the server? (y/n)"
-            )
-            try:
-                msg = await client.wait_for("message", check=check, timeout=300)
-            except asyncio.TimeoutError:
-                await message.send("Sorry, you didn't reply in time!")
-                return
-            if msg.content.lower() == "n":
-                await message.channel.send("Server has not been reset")
-                return
-            serverlist.delete_server(server_id)
-            properties.delete_server_folder(server_id)
-            await message.channel.send(
-                "Server has been reset. Server files are held for 7 days before being permanently deleted. Contact Michle#4142 if you need to restore them"
-            )
-            return
+
         if cmd == "newgame":
             await message.channel.send(
                 "Please reset the game using "
@@ -106,7 +84,7 @@ class properties_cog(commands.Cog):
         if cmd.startswith("recap"):
             cmd = cmd.split(" ")
             turn_number = int(
-                properties.read_server_property_value(server_id, "turn_count")
+                p.read_value(server_id, "turn_count")
             )
             if len(cmd) == 1:
                 await message.channel.send("Please enter a turn number to recap from")
@@ -135,7 +113,7 @@ class properties_cog(commands.Cog):
                 await message.channel.send("Please enter a valid turn number")
                 return
             if int(cmd[1]) > int(
-                properties.read_server_property_value(server_id, "turn_count")
+                p.read_value(server_id, "turn_count")
             ):
                 await message.channel.send(
                     "Please enter a turn number that is less than the current turn number"
@@ -175,7 +153,7 @@ class properties_cog(commands.Cog):
                     "Please enter a prefix that is only 1 character long"
                 )
                 return
-            properties.update_server_property_value(server_id, "prefix", cmd[1])
+            p.update_server_property_value(server_id, "prefix", cmd[1])
             await message.channel.send("Prefix has been set to " + cmd[1])
             return
         if cmd.startswith("press_tick"):
@@ -188,7 +166,7 @@ class properties_cog(commands.Cog):
                     "Please enter a tick value that is greater than 0"
                 )
                 return
-            properties.update_server_property_value(server_id, "press_tick", cmd[1])
+            p.update_server_property_value(server_id, "press_tick", cmd[1])
             await message.channel.send("Press tick has been set to " + cmd[1])
             return
         if cmd.startswith("release_tick"):
@@ -204,7 +182,7 @@ class properties_cog(commands.Cog):
                     "Please enter a tick value that is greater than 0"
                 )
                 return
-            properties.update_server_property_value(server_id, "release_tick", cmd[1])
+            p.update_server_property_value(server_id, "release_tick", cmd[1])
             await message.channel.send("Release tick has been set to " + cmd[1])
             return
         if cmd.startswith("cmd_set"):
@@ -215,7 +193,7 @@ class properties_cog(commands.Cog):
             if not cmd[1].isdigit():
                 await message.channel.send("Please enter a number")
                 return
-            properties.update_server_property_value(server_id, "cmd_set", cmd[1])
+            p.update_server_property_value(server_id, "cmd_set", cmd[1])
             await message.channel.send("Command set has been set to " + cmd[1])
             return
         if cmd.startswith("bar_colour"):
@@ -233,11 +211,11 @@ class properties_cog(commands.Cog):
             ]:
                 await message.channel.send("Please enter a valid colour")
                 return
-            properties.update_server_property_value(server_id, "bar_colour", cmd[1])
+            p.update_server_property_value(server_id, "bar_colour", cmd[1])
             await message.channel.send("Bar colour has been set to " + cmd[1])
             return
         if cmd == "reinit":
-            properties.reinitialise_property_file(server_id)
+            p.reinitialise_property_file(server_id)
 
 
 async def setup(bot):
