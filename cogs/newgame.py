@@ -29,21 +29,16 @@ class newgame(commands.Cog):
         cmd = str(message.content)[1:]
         time_start = time.time()
 
-        if os.path.exists(server_folder_path) == True:
-            return
-
-        if cmd == "newgame":
-
-            def check(msg):
-                games_list = []
-                for cmd in c.list_of_games:
-                    games_list.append(c.cmd_prefix + cmd)
+        # if os.path.exists(server_folder_path) == True:
+        #     return
+        
+        def check(msg):
                 return (
                     msg.author == message.author
                     and msg.channel == message.channel
-                    and msg.content.lower() in c.list_of_games
-                    or msg.content.lower() in games_list
                 )
+
+        if cmd == "newgame":
 
             try:
                 await message.channel.send(
@@ -76,24 +71,54 @@ class newgame(commands.Cog):
                 )
                 return
             game_type = msg.content.lower().strip(c.cmd_prefix)
-            serverlist.create_serverlist()
-            serverlist.add_rows(server_id, server_name, game_type)
-            properties.initialise_property_file(server_id, server_name, game_type)
-            properties.copy_emulator_files(server_id, game_type)
+            
+            if game_type in c.list_of_games:
+                serverlist.create_serverlist()
+                serverlist.add_rows(server_id, server_name, game_type)
+                properties.initialise_property_file(server_id, server_name, game_type)
+                properties.copy_emulator_files(server_id, game_type)
+                await message.channel.send(
+                    "Game has initiated! Use "
+                    + c.cmd_prefix
+                    + "a to start the game and "
+                    + c.cmd_prefix
+                    + "help for a list of commands"
+                )
+                return
+            else:
+                await message.channel.send(
+                    c.octagonal_sign
+                    + "**Sorry "
+                    + str(message.author)
+                    + ", You didn't reply with a valid game type**"
+                    + c.octagonal_sign
+                )
+                return
+        if cmd == "reset":
             await message.channel.send(
-                "Game has initiated! Use "
-                + c.cmd_prefix
-                + "a to start the game and "
-                + c.cmd_prefix
-                + "help for a list of commands"
+            "Are you sure you want to reset the server? (y/n)"
             )
-            return
-        if cmd == "games":
-            await message.channel.send(
-                "The following games are available: " + str(c.list_of_games)
-            )
-            return
+            try:
+                msg = await client.wait_for("message", check=check, timeout=300)
+            except asyncio.TimeoutError:
+                await message.send("Sorry, you didn't reply in time!")
+                return
+            if msg.content.lower() == "y" or "!y" or "yes" or "!yes":
+                serverlist.delete_server(server_id)
+                properties.delete_server_folder(server_id)
+                await message.channel.send(
+                    "Server has been reset. Server files are held for 7 days before being permanently deleted. Contact Michle#4142 if you need to restore them"
+                )
+                return
+            else:
+                await message.channel.send(
+                    c.octagonal_sign
+                    + "server reset cancelled"
+                    + c.octagonal_sign
+                )
+                return
         return
+
 
 
 async def setup(bot):
