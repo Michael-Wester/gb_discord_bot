@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 
 
 def initialise_property_file(server_id, server_name, game_type):
@@ -16,7 +17,7 @@ def initialise_property_file(server_id, server_name, game_type):
     server_properties_file = open(
         "servers/" + str(server_id) + "/" + str(server_id) + ".properties", "w"
     )
-    server_properties_file.write("date_created=0")
+    server_properties_file.write("date_created=0\n")
     server_properties_file.write("owner_id=0\n")
     server_properties_file.write("server_id=" + str(server_id) + "\n")
     server_properties_file.write("server_name=" + str(server_name) + "\n")
@@ -61,7 +62,7 @@ def reinitialise_property_file(server_id):
         ("cmd_set", "1"),
     ]
     for property, default_value in property_list:
-        if read_server_property(server_id, property) == None:
+        if read_property(server_id, property) == None:
             with open(
                 "servers/" + str(server_id) + "/" + str(server_id) + ".properties", "a"
             ) as f:
@@ -69,7 +70,7 @@ def reinitialise_property_file(server_id):
 
 
 def get_game_type(server_id):
-    game_type = read_server_property_value(server_id, "game_type")
+    game_type = read_value(server_id, "game_type")
     return game_type
 
 
@@ -90,8 +91,13 @@ def copy_emulator_files(server_id, game_type):
     )
 
 
-def delete_server_folder(server_id):
+def delete_server_folder(server_id):   
+    if os.path.exists("server_bin/" + str(server_id)):
+        shutil.rmtree("server_bin/" + str(server_id))
+        
     shutil.move("servers/" + str(server_id), "server_bin")
+    return
+        
 
 
 def update_server_property_value(server_id, property, value):
@@ -107,14 +113,16 @@ def update_server_property_value(server_id, property, value):
     server_properties_file.close()
 
 
-def read_server_property_value(server_id, property):
+def read_value(server_id, property):
     server_properties = get_server_properties(server_id)
     for i in range(len(server_properties)):
         if server_properties[i].split("=")[0] == property:
             return server_properties[i].split("=")[1]
+        
+#print(read_value(957136739632295966, "prefix"))
 
 
-def read_server_property(server_id, property):
+def read_property(server_id, property):
     server_properties = get_server_properties(server_id)
     for i in range(len(server_properties)):
         if server_properties[i].split("=")[0] == property:
@@ -123,11 +131,16 @@ def read_server_property(server_id, property):
 
 
 def increase_turn_count(server_id):
-    turn_count = read_server_property_value(server_id, "turn_count")
+    turn_count = read_value(server_id, "turn_count")
     turn_count = int(turn_count) + 1
     update_server_property_value(server_id, "turn_count", str(turn_count))
+    return turn_count
 
 
-def add_to_command_list(server_id, cmd, turn_count, author, time):
+def record_cmd(server_id, cmd, author):
+    turn_count = increase_turn_count(server_id)
+    current_time = str(time.time())
     with open("servers/" + str(server_id) + "/" + str(server_id) + ".data", "a") as f:
-        f.write(cmd + "," + str(turn_count) + "," + author + "," + str(time) + "\n")
+        f.write(cmd + "," + str(turn_count) + "," + author + "," + current_time + "\n")
+    return
+
