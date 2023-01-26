@@ -1,5 +1,5 @@
 from PIL import Image
-import server_properties_editor as properties
+import server_properties_editor as p
 
 
 def save_image(img, server_id):
@@ -10,7 +10,7 @@ def save_image(img, server_id):
         + "images/"
         + str(server_id)
         + "_"
-        + str(properties.read_server_property_value(server_id, "turn_count"))
+        + str(p.read_value(server_id, "turn_count"))
         + ".png"
     )
     new_img = img.resize((img.size[0] * 2, img.size[1] * 2), Image.ANTIALIAS)
@@ -24,7 +24,7 @@ def save_image_frame(img, server_id):
         folderpath
         + str(server_id)
         + "_"
-        + str(properties.read_server_property_value(server_id, "turn_count"))
+        + str(p.read_value(server_id, "turn_count"))
         + ".png"
     )
     new_img = img.resize((img.size[0] * 2, img.size[1] * 2), Image.ANTIALIAS)
@@ -34,7 +34,7 @@ def save_image_frame(img, server_id):
 
 def make_gif(images, filepath, filename, server_id):
     bar_height = int(
-        properties.read_server_property_value(server_id, "progress_bar_height")
+        p.read_value(server_id, "progress_bar_height")
     )
     frame_one = images[0]
     frame_one_width = frame_one.size[0]
