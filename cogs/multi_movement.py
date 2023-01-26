@@ -88,7 +88,7 @@ class multi_movement(commands.Cog):
                 file=discord.File(server_folder_path + c.gif_name)
             )
             time_end = time.time() - time_start
-            await message.channel.send( "Time taken: " + str(time_end) + " seconds for an average of " + str(time_end / len(cmd)) + " seconds per command")
+            #await message.channel.send( "Time taken: " + str(time_end) + " seconds for an average of " + str(time_end / len(cmd)) + " seconds per command")
             gc.collect
             return
 
