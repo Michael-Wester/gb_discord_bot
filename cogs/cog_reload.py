@@ -1,8 +1,8 @@
-import discord
 from discord.ext import commands
 import emulator as emulator
-import time
 import os
+import psutil;
+import gc
 
 
 class cog_reload(commands.Cog):
@@ -17,15 +17,13 @@ class cog_reload(commands.Cog):
     async def on_message(self, message):
         client = self.bot
         if message.author == client.user:
-
+            return
+        
+        if (int(message.author.id) != int(os.environ['DEV_ID'])) and int(message.author.id) != int(os.environ['TEST_ID']):
+            print("Not dev")
             return
 
-        server_id = message.guild.id
-        server_name = message.guild.name
-        server_folder_path = "servers/" + str(server_id) + "/"
         cmd = str(message.content)[1:]
-        time_start = time.time()
-
 
         if cmd == "reload":
             await message.channel.send("Reloading...")
@@ -33,10 +31,17 @@ class cog_reload(commands.Cog):
             for filename in os.listdir("./cogs"):
                 if filename.endswith(".py"):
                     print(f"Reloaded {filename}")
-                    await self.bot.reload_extension(f"cogs.{filename[:-3]}")
-            
-            
+                    await self.bot.reload_extension(f"cogs.{filename[:-3]}")           
             await message.channel.send("Reloaded!")
+            return
+        
+        if cmd == "memory":
+            await message.channel.send("Memory usage: " + str(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2) + " MB")
+            return
+        
+        if cmd == "gc":
+            gc.collect()
+            await message.channel.send("Garbage collected!")
             return
 
         return
