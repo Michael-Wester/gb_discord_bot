@@ -49,10 +49,8 @@ class movement(commands.Cog):
             return img_filepath
         
         if (p.read_value(server_id, "game_type") in ["red", "blue", "yellow"]):
-            print("Game type is " + p.read_value(server_id, "game_type"))
             self.pyboy = self.pyboy_gb
         else:
-            print("Game type is " + p.read_value(server_id, "game_type"))
             self.pyboy = self.pyboy_gbc
             
         emulator = Emulator(server_id, self.pyboy)
