@@ -8,13 +8,14 @@ import image_helper as h
 import os
 import constants as c
 from emulator import Emulator
-from pyboy_instance import pyboy
+from pyboy_instance import pyboy_gb, pyboy_gbc
 import gc
 
 class movement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.pyboy = pyboy 
+        self.pyboy_gb = pyboy_gb 
+        self.pyboy_gbc = pyboy_gbc
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -47,6 +48,13 @@ class movement(commands.Cog):
             img_filepath = h.save_image(emulator_img, server_id)
             return img_filepath
         
+        if (p.read_value(server_id, "game_type") in ["red", "blue", "yellow"]):
+            print("Game type is " + p.read_value(server_id, "game_type"))
+            self.pyboy = self.pyboy_gb
+        else:
+            print("Game type is " + p.read_value(server_id, "game_type"))
+            self.pyboy = self.pyboy_gbc
+            
         emulator = Emulator(server_id, self.pyboy)
         emulator.load_game()
 
