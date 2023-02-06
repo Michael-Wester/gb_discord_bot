@@ -53,5 +53,5 @@ def make_gif(images, filepath, filename, server_id):
         append_images=images,
         save_all=True,
         duration=900,
-        loop=1,
+        loop=0,
     )
