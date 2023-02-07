@@ -70,13 +70,6 @@ class properties_cog(commands.Cog):
             await message.channel.send(embed=embed)
             return
 
-        if cmd == "newgame":
-            await message.channel.send(
-                "Please reset the game using "
-                + prefix
-                + "reset before starting a new game"
-            )
-            return
         if cmd == "info":
             await message.channel.send(
                 "This bot is currently in beta. Please report any bugs to Michle#4142"
