@@ -2,11 +2,11 @@
 
 A bot that allows you the play the original Gameboy and Gameboy Color pokemon games within your discord server.
 
-![alt text](https://cdn.discordapp.com/attachments/1061939463762214972/1063045885019291658/move.gif)
-![alt text](https://cdn.discordapp.com/attachments/1064885465041338418/1064885589322776667/move.gif)
+![alt text](https://cdn.discordapp.com/attachments/1072361944746561637/1072361982122004480/goldstart.gif)
+![alt text](https://cdn.discordapp.com/attachments/1072361944746561637/1072361982516281344/goldwasd.gif)
 
-![alt text](https://cdn.discordapp.com/attachments/1061939463762214972/1063053402843656282/move.gif)
-![alt text](https://cdn.discordapp.com/attachments/1061939463762214972/1062375245413089280/move.gif)
+![alt text](https://cdn.discordapp.com/attachments/1072361944746561637/1072361983606800414/goldwasd2.gif)
+![alt text](https://cdn.discordapp.com/attachments/1072361944746561637/1072361983095091311/goldbattle.gif)
 
 # Features
 
