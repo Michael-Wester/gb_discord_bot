@@ -29,8 +29,12 @@ class newgame(commands.Cog):
         cmd = str(message.content)[1:]
         time_start = time.time()
 
-        # if os.path.exists(server_folder_path) == True:
-        #     return
+        if os.path.exists(server_folder_path) == True:
+            prefix = properties.read_value(server_id, "prefix")
+            await message.channel.send(
+                "Please reset the game using " + prefix + "reset before starting a new game"
+            )
+            return
         
         def check(msg):
                 return (
