@@ -36,8 +36,6 @@ or using:
 
 `pip install pandas`
 
-`pip install pyboy`
-
 `pip install pillow`
 
 Requires the initiated gameboy roms to be stored folder named 'roms' in the project root.
