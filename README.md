@@ -40,7 +40,7 @@ or using:
 
 `pip install pillow`
 
-Requires the gameboy roms to be stored folder named 'roms' in the project root
+Requires the initiated gameboy roms to be stored folder named 'roms' in the project root.
 
 Requires DISCORD_TOKEN to be stored in the .env file
 
