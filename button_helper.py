@@ -3,16 +3,17 @@ from emulator import Emulator
 import server_properties_editor as p
 import image_helper as h
 from pyboy import WindowEvent as we
+from pyboy_instance import pyboy_gb, pyboy_gbc
 
-def press_button(self, interaction, cmd):   
+def press_button(interaction, cmd):   
     server_id = interaction.guild.id
     
     if (p.read_value(server_id, "game_type") in ["red", "blue", "yellow"]):
-        self.pyboy = self.pyboy_gb
+        pyboy = pyboy_gb
     else:
-        self.pyboy = self.pyboy_gbc
+        pyboy = pyboy_gbc
         
-    emulator = Emulator(server_id, self.pyboy)
+    emulator = Emulator(server_id, pyboy)
     emulator.load_game()
     
     if cmd == "up":
