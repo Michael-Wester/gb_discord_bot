@@ -42,11 +42,6 @@ class movement(commands.Cog):
         
         if cmd not in c.cmd_list:
             return
-        def save_emulator_image(emulator_img):
-            if cmd in c.cmd_list:
-                p.record_cmd(server_id, cmd, message.author.name)
-            img_filepath = h.save_image(emulator_img, server_id)
-            return img_filepath
         
         if (p.read_value(server_id, "game_type") in ["red", "blue", "yellow"]):
             self.pyboy = self.pyboy_gb
@@ -55,29 +50,12 @@ class movement(commands.Cog):
             
         emulator = Emulator(server_id, self.pyboy)
         emulator.load_game()
-
-        if cmd == "a":
-            emulator.movement(we.PRESS_BUTTON_A, we.RELEASE_BUTTON_A)
-        elif cmd == "b":
-            emulator.movement(we.PRESS_BUTTON_B, we.RELEASE_BUTTON_B)
-        elif cmd == "up":
-            emulator.movement(we.PRESS_ARROW_UP, we.RELEASE_ARROW_UP)
-        elif cmd == "down":
-            emulator.movement(we.PRESS_ARROW_DOWN, we.RELEASE_ARROW_DOWN)
-        elif cmd == "left":
-            emulator.movement(we.PRESS_ARROW_LEFT, we.RELEASE_ARROW_LEFT)
-        elif cmd == "right":
-            emulator.movement(we.PRESS_ARROW_RIGHT, we.RELEASE_ARROW_RIGHT)
-        elif cmd == "start":
-            emulator.movement(we.PRESS_BUTTON_START, we.RELEASE_BUTTON_START)
-        elif cmd == "select":
-            emulator.movement(we.PRESS_BUTTON_SELECT, we.RELEASE_BUTTON_SELECT)
-        else:
-            print("Not a movement command")
-            return
-
+        emulator.movement(cmd)
+        
         img = emulator.save_screenshot()
-        img_filepath = save_emulator_image(img)
+        p.record_cmd(server_id, cmd, message.author.name)
+        img_filepath = h.save_image(img, server_id)
+        
         emulator.save()
         
         await message.channel.send(file=discord.File(img_filepath))
