@@ -1,6 +1,7 @@
 from pyboy import PyBoy
 from pyboy import logger
 from server_properties_editor import *
+from pyboy import WindowEvent as we
 
 logger.log_level("ERROR")
 
@@ -26,11 +27,30 @@ class Emulator:
         return pyboy
 
 
-    def movement(self, press, release):
+    def movement(self, cmd):
         pyboy = self.pyboy
         press_tick = self.press_tick
         release_tick = self.release_tick
-        
+        if cmd == "a":
+            press, release = we.PRESS_BUTTON_A, we.RELEASE_BUTTON_A
+        elif cmd == "b":
+            press, release = we.PRESS_BUTTON_B, we.RELEASE_BUTTON_B
+        elif cmd == "up":
+            press, release = we.PRESS_ARROW_UP, we.RELEASE_ARROW_UP
+        elif cmd == "down":
+            press, release = we.PRESS_ARROW_DOWN, we.RELEASE_ARROW_DOWN
+        elif cmd == "left":
+            press, release = we.PRESS_ARROW_LEFT, we.RELEASE_ARROW_LEFT
+        elif cmd == "right":
+            press, release = we.PRESS_ARROW_RIGHT, we.RELEASE_ARROW_RIGHT
+        elif cmd == "start":
+            press, release = we.PRESS_BUTTON_START, we.RELEASE_BUTTON_START
+        elif cmd == "select":
+            press, release = we.PRESS_BUTTON_SELECT, we.RELEASE_BUTTON_SELECT
+        else:
+            print("Not a movement command")
+            return
+
         pyboy.send_input(press)
         for i in range(press_tick):
             pyboy.tick()
@@ -40,7 +60,6 @@ class Emulator:
             pyboy.tick()
 
         return pyboy
-
 
     def save_screenshot(self):
         pyboy = self.pyboy
