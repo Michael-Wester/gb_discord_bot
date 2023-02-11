@@ -1,16 +1,11 @@
 import discord
 from discord.ext import commands
 import emulator as emulator
-from pyboy import WindowEvent as we
 import server_properties_editor as p
 import time
-import image_helper as h
 import os
 import constants as c
-from emulator import Emulator
 from pyboy_instance import pyboy_gb, pyboy_gbc
-import gc
-import menu_class as m
 import button_helper as bh
 
 class movement(commands.Cog):
