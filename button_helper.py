@@ -5,9 +5,7 @@ import image_helper as h
 from pyboy import WindowEvent as we
 from pyboy_instance import pyboy_gb, pyboy_gbc
 
-def press_button(interaction, cmd):   
-    server_id = interaction.guild.id
-    
+def press_button(server_id, name, cmd):   
     if (p.read_value(server_id, "game_type") in ["red", "blue", "yellow"]):
         pyboy = pyboy_gb
     else:
@@ -15,17 +13,17 @@ def press_button(interaction, cmd):
         
     emulator = Emulator(server_id, pyboy)
     emulator.load_game()
-    emulator.movement(cmd)
+    
+    if cmd != "None":
+        emulator.movement(cmd)
     
     img = emulator.save_screenshot()
-    p.record_cmd(server_id, cmd, interaction.user.name)
+    p.record_cmd(server_id, cmd, name)
     img_filepath = h.save_image(img, server_id)
-    
     emulator.save()
     file = discord.File(img_filepath, filename="cmd.png")
     embed = discord.Embed()
-    embed.title = interaction.user.name + ": " + cmd
+    embed.title = name + ": " + cmd
     embed.set_image(url="attachment://cmd.png")
-    
     return embed, file
         
