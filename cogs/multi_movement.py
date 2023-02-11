@@ -10,6 +10,7 @@ import os
 from pyboy_instance import pyboy_gb, pyboy_gbc
 import gc
 from emulator import Emulator
+import logging
 
 
 class multi_movement(commands.Cog):
@@ -51,14 +52,16 @@ class multi_movement(commands.Cog):
             cmd_set = p.read_value(server_id, "cmd_set")
             if cmd_set == "1":
                 return cmd_list_1
-            if cmd_set == "2":
+            elif cmd_set == "2":
                 return cmd_list_2
-            if cmd_set == "3":
-                    return cmd_list_3
+            elif cmd_set == "3":
+                return cmd_list_3
+            else:
+                logging.error("Invalid cmd_set value in server properties.")
             
-            
-        def append_image(server_id, image_array, emulator, press, release):
-            emulator.movement(press, release)
+
+        def append_image(server_id, image_array, emulator, cmd):
+            emulator.movement(cmd)
             image = emulator.save_screenshot()
             image_array.append(h.save_image_frame(image, server_id))
             p.record_cmd(server_id, char, message.author.name)
@@ -69,31 +72,28 @@ class multi_movement(commands.Cog):
         else:
             self.pyboy = self.pyboy_gbc
             
-            
         emulator = Emulator(server_id, self.pyboy)
         emulator.load_game()
         
-        
         images = []
         cmd_list = get_cmd_list(server_id)
-        for char in cmd:
-            if char == cmd_list[4]:
-                images = append_image(server_id, images, emulator, we.PRESS_BUTTON_A, we.RELEASE_BUTTON_A)
-            if char == cmd_list[5]:
-                images = append_image(server_id, images, emulator, we.PRESS_BUTTON_B, we.RELEASE_BUTTON_B)                        
+        for char in cmd:                          
             if char == cmd_list[0]:
-                images = append_image(server_id, images, emulator, we.PRESS_ARROW_UP, we.RELEASE_ARROW_UP)
+                images = append_image(server_id, images, emulator, "up")
             if char == cmd_list[1]:
-                images = append_image(server_id, images, emulator, we.PRESS_ARROW_LEFT, we.RELEASE_ARROW_LEFT)
+                images = append_image(server_id, images, emulator, "left")
             if char == cmd_list[2]:
-                images = append_image(server_id, images, emulator, we.PRESS_ARROW_DOWN, we.RELEASE_ARROW_DOWN)
+                images = append_image(server_id, images, emulator, "down")
             if char == cmd_list[3]:
-                images = append_image(server_id, images, emulator, we.PRESS_ARROW_RIGHT, we.RELEASE_ARROW_RIGHT)
+                images = append_image(server_id, images, emulator, "right")
+            if char == cmd_list[4]:
+                images = append_image(server_id, images, emulator, "a")
+            if char == cmd_list[5]:
+                images = append_image(server_id, images, emulator, "b")         
             if char == cmd_list[6]:
-                images = append_image(server_id, images, emulator, we.PRESS_BUTTON_SELECT, we.RELEASE_BUTTON_SELECT)
+                images = append_image(server_id, images, emulator, "select")
             if char == cmd_list[7]:
-                images = append_image(server_id, images, emulator, we.PRESS_BUTTON_START, we.RELEASE_BUTTON_START)
-
+                images = append_image(server_id, images, emulator, "start")
 
         emulator.save()
         h.make_gif(images, server_folder_path, "move.gif", server_id)
