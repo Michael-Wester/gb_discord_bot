@@ -10,6 +10,8 @@ import constants as c
 from emulator import Emulator
 from pyboy_instance import pyboy_gb, pyboy_gbc
 import gc
+import menu_class as m
+import button_helper as bh
 
 class movement(commands.Cog):
     def __init__(self, bot):
@@ -42,24 +44,11 @@ class movement(commands.Cog):
         
         if cmd not in c.cmd_list:
             return
+
+        embed, file = bh.press_button(server_id, message.author.name, cmd)
         
-        if (p.read_value(server_id, "game_type") in ["red", "blue", "yellow"]):
-            self.pyboy = self.pyboy_gb
-        else:
-            self.pyboy = self.pyboy_gbc
-            
-        emulator = Emulator(server_id, self.pyboy)
-        emulator.load_game()
-        emulator.movement(cmd)
-        
-        img = emulator.save_screenshot()
-        p.record_cmd(server_id, cmd, message.author.name)
-        img_filepath = h.save_image(img, server_id)
-        
-        emulator.save()
-        
-        await message.channel.send(file=discord.File(img_filepath))
-        #await message.channel.send( "Command executed in " + str(round(time.time() - time_start, 2)) + " seconds.")
+        await message.channel.send(file=file)
+        await message.channel.send( "Command executed in " + str(round(time.time() - time_start, 2)) + " seconds.")
         return
         
 
