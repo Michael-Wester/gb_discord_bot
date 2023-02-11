@@ -42,8 +42,7 @@ class movement(commands.Cog):
 
         embed, file = bh.press_button(server_id, message.author.name, cmd)
         
-        await message.channel.send(file=file)
-        await message.channel.send( "Command executed in " + str(round(time.time() - time_start, 2)) + " seconds.")
+        await message.channel.send(file=file)        
         return
         
 
