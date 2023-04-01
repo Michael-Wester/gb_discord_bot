@@ -6,3 +6,8 @@ rubbish
 *.png
 *.csv
 venv
+boxart
+devtools
+roms
+server_bin
+servers
